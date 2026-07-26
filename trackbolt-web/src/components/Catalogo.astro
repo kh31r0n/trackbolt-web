@@ -1,0 +1,372 @@
+---
+import lineasData from '../../data/generado/lineas.json';
+
+interface Props {
+  /** Si se indica, el catálogo queda fijo en esa línea y no muestra el filtro de líneas. */
+  lineaFija?: string | null;
+  /** Grupo preseleccionado dentro de la línea. */
+  grupoFijo?: string | null;
+}
+
+const { lineaFija = null, grupoFijo = null } = Astro.props;
+
+const lineas = lineasData as any[];
+const linea = lineaFija ? lineas.find((l) => l.slug === lineaFija) : null;
+
+/** Facetas globales o de la línea, según el contexto. */
+function facetasDe(items: any[]) {
+  const acumular = (campo: string) => {
+    const total = new Map<string, number>();
+    for (const l of items) {
+      for (const v of l.facetas[campo] ?? []) {
+        total.set(v.valor, (total.get(v.valor) ?? 0) + v.total);
+      }
+    }
+    return [...total.entries()].map(([valor, n]) => ({ valor, total: n }));
+  };
+  return acumular;
+}
+
+const fuente = linea ? [linea] : lineas;
+const acumular = facetasDe(fuente);
+
+/** Ordena los diámetros por medida real: M8 antes que M10, y 1/4" antes que 5/8". */
+function ordenMedida(valor: string): number {
+  const metrico = /^M([\d.]+)$/.exec(valor);
+  if (metrico) return Number(metrico[1]);
+  const mm = /^([\d.]+)\s*mm$/.exec(valor);
+  if (mm) return Number(mm[1]);
+  const pulg = valor.replace(/"/g, '').trim();
+  const compuesta = /^(\d+)[-.](\d+)\/(\d+)$/.exec(pulg);
+  if (compuesta) return (Number(compuesta[1]) + Number(compuesta[2]) / Number(compuesta[3])) * 25.4;
+  const simple = /^(\d+)\/(\d+)$/.exec(pulg);
+  if (simple) return (Number(simple[1]) / Number(simple[2])) * 25.4;
+  const entero = Number(pulg);
+  return Number.isFinite(entero) ? entero * 25.4 : 9999;
+}
+
+const facetas = [
+  { clave: 'g', titulo: 'Grupo', valores: linea ? linea.grupos.map((g: any) => ({ valor: g.nombre, total: g.total })) : [], abierto: true },
+  { clave: 'r', titulo: 'Grado / clase', valores: acumular('grado'), abierto: true },
+  { clave: 'd', titulo: 'Diámetro', valores: acumular('diametro'), abierto: true },
+  { clave: 's', titulo: 'Sistema', valores: acumular('sistema'), abierto: false },
+  { clave: 'a', titulo: 'Material y acabado', valores: acumular('acabado'), abierto: false },
+  { clave: 'h', titulo: 'Tipo de cabeza', valores: acumular('cabeza'), abierto: false },
+  { clave: 't', titulo: 'Rosca', valores: acumular('rosca_largo'), abierto: false },
+  { clave: 'v', titulo: 'Marca de vehículo', valores: acumular('vehiculo'), abierto: false },
+].filter((f) => f.valores.length > 1);
+
+const etiquetaSistema: Record<string, string> = { metrico: 'Métrico (mm)', pulgadas: 'Pulgadas' };
+---
+
+<div class="catalogo" data-catalogo data-linea={lineaFija ?? ''} data-grupo={grupoFijo ?? ''}>
+  <form class="filtros" id="filtros" aria-label="Filtros del catálogo">
+    <div class="grupo-filtro" style="border-top:none;padding-top:0">
+      <strong style="font-size:0.78rem;letter-spacing:0.1em;text-transform:uppercase">Filtrar</strong>
+      <button type="reset" class="btn btn-linea btn-pequeno" style="float:right;margin-top:-4px"
+        >Limpiar</button
+      >
+    </div>
+
+    {
+      !lineaFija && (
+        <details class="grupo-filtro" open>
+          <summary>Línea de producto</summary>
+          <div class="opciones">
+            {lineas.map((l) => (
+              <label class="opcion">
+                <input type="checkbox" name="l" value={l.slug} />
+                <span>{l.nombre}</span>
+                <span class="n">{l.total}</span>
+              </label>
+            ))}
+          </div>
+        </details>
+      )
+    }
+
+    {
+      facetas.map((f) => (
+        <details class="grupo-filtro" open={f.abierto}>
+          <summary>{f.titulo}</summary>
+          <div class="opciones">
+            {f.valores
+              .sort((a: any, b: any) =>
+                f.clave === 'd'
+                  ? ordenMedida(a.valor) - ordenMedida(b.valor)
+                  : b.total - a.total || a.valor.localeCompare(b.valor)
+              )
+              .map((v: any) => (
+                <label class="opcion">
+                  <input type="checkbox" name={f.clave} value={v.valor} />
+                  <span>{f.clave === 's' ? (etiquetaSistema[v.valor] ?? v.valor) : v.valor}</span>
+                  <span class="n">{v.total}</span>
+                </label>
+              ))}
+          </div>
+        </details>
+      ))
+    }
+
+    <details class="grupo-filtro">
+      <summary>Disponibilidad</summary>
+      <div class="opciones">
+        <label class="opcion">
+          <input type="checkbox" name="e" value="2" /><span>Disponible</span>
+        </label>
+        <label class="opcion">
+          <input type="checkbox" name="e" value="1" /><span>Pocas unidades</span>
+        </label>
+        <label class="opcion">
+          <input type="checkbox" name="q" value="1" /><span>Solo línea REX</span>
+        </label>
+      </div>
+    </details>
+  </form>
+
+  <div>
+    <div class="buscador">
+      <label class="visualmente-oculto" for="q">Buscar en el catálogo</label>
+      <input
+        type="search"
+        id="q"
+        name="q"
+        placeholder="Código, medida o número de parte (ej. M16 120, 5/8, 6Y0846)"
+        autocomplete="off"
+      />
+    </div>
+
+    <div class="fichas-activas" id="fichas"></div>
+
+    <div class="barra-resultados">
+      <span class="total" id="total">Cargando catálogo…</span>
+      <label class="visualmente-oculto" for="orden">Ordenar por</label>
+      <select id="orden">
+        <option value="medida">Ordenar: por medida</option>
+        <option value="nombre">Ordenar: A – Z</option>
+        <option value="precio-asc">Ordenar: precio menor primero</option>
+        <option value="precio-desc">Ordenar: precio mayor primero</option>
+      </select>
+    </div>
+
+    <div class="lista-productos" id="lista"></div>
+    <div class="vacio oculto" id="vacio">
+      <p style="font-weight:700;color:var(--tinta)">No hay referencias con esos filtros.</p>
+      <p style="margin-top:0.5rem">
+        Escríbenos por WhatsApp con la medida o el número de parte: si no está en stock, lo
+        conseguimos o lo fabricamos.
+      </p>
+    </div>
+    <button class="btn btn-negro mas-resultados oculto" id="mas">Ver más referencias</button>
+  </div>
+</div>
+
+<script>
+  const LOTE = 60;
+  const raiz = document.querySelector('[data-catalogo]') as HTMLElement;
+  const lineaFija = raiz.dataset.linea || '';
+  const grupoFijo = raiz.dataset.grupo || '';
+
+  const form = document.getElementById('filtros') as HTMLFormElement;
+  const entrada = document.getElementById('q') as HTMLInputElement;
+  const orden = document.getElementById('orden') as HTMLSelectElement;
+  const lista = document.getElementById('lista') as HTMLElement;
+  const total = document.getElementById('total') as HTMLElement;
+  const vacio = document.getElementById('vacio') as HTMLElement;
+  const mas = document.getElementById('mas') as HTMLButtonElement;
+  const fichas = document.getElementById('fichas') as HTMLElement;
+
+  const ESTADOS = [
+    { clave: 'pedido', texto: 'Bajo pedido' },
+    { clave: 'pocas', texto: 'Pocas unidades' },
+    { clave: 'disponible', texto: 'Disponible' },
+  ];
+  const cop = new Intl.NumberFormat('es-CO', {
+    style: 'currency',
+    currency: 'COP',
+    maximumFractionDigits: 0,
+  });
+
+  let productos: any[] = [];
+  let filtrados: any[] = [];
+  let mostrados = 0;
+
+  /** Normaliza para buscar sin acentos ni comillas: '5/8"' encuentra '5/8'. */
+  const norm = (t: string) =>
+    t
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[\"'×]/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+
+  function leerFiltros() {
+    const datos = new FormData(form);
+    const f: Record<string, string[]> = {};
+    for (const [k, v] of datos.entries()) {
+      (f[k] ||= []).push(String(v));
+    }
+    if (lineaFija) f.l = [lineaFija];
+    return f;
+  }
+
+  function aplicar() {
+    const f = leerFiltros();
+    const terminos = norm(entrada.value).split(' ').filter(Boolean);
+
+    filtrados = productos.filter((p) => {
+      for (const clave of ['l', 'g', 'r', 'd', 's', 'a', 'h', 't', 'v']) {
+        const sel = f[clave];
+        if (sel && sel.length && !sel.includes(p[clave])) return false;
+      }
+      if (f.e && f.e.length && !f.e.includes(String(p.e))) return false;
+      if (f.q && f.q.length && p.q !== 1) return false;
+      if (terminos.length) {
+        const texto = p._b;
+        for (const t of terminos) if (!texto.includes(t)) return false;
+      }
+      return true;
+    });
+
+    ordenar();
+    pintarFichas(f);
+    mostrados = 0;
+    lista.innerHTML = '';
+    pintarLote();
+
+    total.textContent =
+      filtrados.length === 1
+        ? '1 referencia'
+        : `${filtrados.length.toLocaleString('es-CO')} referencias`;
+    vacio.classList.toggle('oculto', filtrados.length > 0);
+    guardarUrl(f, entrada.value);
+  }
+
+  function ordenar() {
+    const modo = orden.value;
+    filtrados.sort((a, b) => {
+      if (modo === 'nombre') return a.n.localeCompare(b.n, 'es');
+      if (modo === 'precio-asc') return (a.p ?? Infinity) - (b.p ?? Infinity);
+      if (modo === 'precio-desc') return (b.p ?? -1) - (a.p ?? -1);
+      return a.g.localeCompare(b.g, 'es') || a.x - b.x || a.y - b.y || a.n.localeCompare(b.n, 'es');
+    });
+  }
+
+  function pintarLote() {
+    const trozo = filtrados.slice(mostrados, mostrados + LOTE);
+    const html = trozo
+      .map((p) => {
+        const estado = ESTADOS[p.e];
+        const atributos = [p.d, p.r, p.a, p.t ? `rosca ${p.t.toLowerCase()}` : '', p.k]
+          .filter(Boolean)
+          .map((a) => `<span>${a}</span>`)
+          .join('');
+        const precio = p.p
+          ? cop.format(p.p)
+          : '<span style="font-size:0.9rem">Precio a confirmar</span>';
+        return `<a class="producto" href="/producto/${p.c}/">
+          <span>
+            <span class="codigo">Ref. ${p.c}</span>
+            ${p.q ? '<span class="sello-rex">REX</span>' : ''}
+            <span class="nombre" style="display:block">${p.n}</span>
+            <span class="atributos">${atributos}</span>
+          </span>
+          <span class="derecha">
+            <span class="precio">${precio}<span class="unidad"> / unidad</span></span>
+            <span class="estado estado-${estado.clave}">${estado.texto}</span>
+          </span>
+        </a>`;
+      })
+      .join('');
+    lista.insertAdjacentHTML('beforeend', html);
+    mostrados += trozo.length;
+    mas.classList.toggle('oculto', mostrados >= filtrados.length);
+    mas.textContent = `Ver más referencias (quedan ${(filtrados.length - mostrados).toLocaleString('es-CO')})`;
+  }
+
+  function pintarFichas(f: Record<string, string[]>) {
+    const items: string[] = [];
+    for (const [clave, valores] of Object.entries(f)) {
+      if (clave === 'l' && lineaFija) continue;
+      for (const v of valores) {
+        items.push(
+          `<button type="button" class="ficha-activa" data-clave="${clave}" data-valor="${v}">${
+            clave === 'e' ? ESTADOS[Number(v)].texto : clave === 'q' ? 'Línea REX' : v
+          }</button>`
+        );
+      }
+    }
+    fichas.innerHTML = items.join('');
+  }
+
+  function guardarUrl(f: Record<string, string[]>, q: string) {
+    const p = new URLSearchParams();
+    for (const [clave, valores] of Object.entries(f)) {
+      if (clave === 'l' && lineaFija) continue;
+      for (const v of valores) p.append(clave, v);
+    }
+    if (q.trim()) p.set('q', q.trim());
+    const cadena = p.toString();
+    history.replaceState(null, '', cadena ? `?${cadena}` : location.pathname);
+  }
+
+  function restaurarUrl() {
+    const p = new URLSearchParams(location.search);
+    const q = p.get('q');
+    if (q) entrada.value = q;
+    p.delete('q');
+    for (const [clave, valor] of p.entries()) {
+      const casilla = form.querySelector(
+        `input[name="${clave}"][value="${CSS.escape(valor)}"]`
+      ) as HTMLInputElement | null;
+      if (casilla) {
+        casilla.checked = true;
+        casilla.closest('details')?.setAttribute('open', '');
+      }
+    }
+    if (grupoFijo) {
+      const casilla = form.querySelector(
+        `input[name="g"][value="${CSS.escape(grupoFijo)}"]`
+      ) as HTMLInputElement | null;
+      if (casilla) casilla.checked = true;
+    }
+  }
+
+  let temporizador: number;
+  entrada.addEventListener('input', () => {
+    clearTimeout(temporizador);
+    temporizador = window.setTimeout(aplicar, 130);
+  });
+  form.addEventListener('change', aplicar);
+  form.addEventListener('reset', () => {
+    entrada.value = '';
+    setTimeout(aplicar);
+  });
+  orden.addEventListener('change', aplicar);
+  mas.addEventListener('click', pintarLote);
+  fichas.addEventListener('click', (ev) => {
+    const boton = (ev.target as HTMLElement).closest('.ficha-activa') as HTMLElement | null;
+    if (!boton) return;
+    const casilla = form.querySelector(
+      `input[name="${boton.dataset.clave}"][value="${CSS.escape(boton.dataset.valor!)}"]`
+    ) as HTMLInputElement | null;
+    if (casilla) casilla.checked = false;
+    aplicar();
+  });
+
+  fetch('/datos/buscador.json')
+    .then((r) => r.json())
+    .then((datos) => {
+      productos = datos;
+      // Texto de búsqueda precalculado una sola vez.
+      for (const p of productos) {
+        p._b = norm([p.c, p.n, p.k, p.g, p.v].filter(Boolean).join(' '));
+      }
+      restaurarUrl();
+      aplicar();
+    })
+    .catch(() => {
+      total.textContent = 'No se pudo cargar el catálogo. Recarga la página.';
+    });
+</script>

@@ -1,0 +1,209 @@
+---
+import Base from '../layouts/Base.astro';
+import IconoLinea from '../components/IconoLinea.astro';
+import lineas from '../../data/generado/lineas.json';
+import reporte from '../../data/generado/reporte.json';
+import { empresa, pilares, sectores, diferenciales, whatsapp } from '../data/sitio';
+
+const totalRef = reporte.total_referencias.toLocaleString('es-CO');
+const disponibles = (reporte.por_estado.disponible ?? 0).toLocaleString('es-CO');
+const conParte = 63;
+---
+
+<Base
+  titulo="Trackbolt | Tornillería de alta resistencia para maquinaria pesada"
+  descripcion={`${totalRef} referencias de tornillería de alta resistencia en stock: tornillos de zapata y cuchilla, hexagonales 10.9 y 12.9, tuercas, arandelas y pernos de rueda. Bogotá, envíos a toda Colombia.`}
+>
+  <!-- Portada -->
+  <section class="portada sobre-oscuro">
+    <div class="contenedor portada-contenido">
+      <p class="etiqueta">{empresa.anios} años · {empresa.lema}</p>
+      <h1>
+        Fijamos<br />
+        <span class="rojo">lo que mueve</span><br />
+        al mundo
+      </h1>
+      <p class="entradilla">
+        Tornillería de alta resistencia para las máquinas que trabajan al límite. {totalRef}
+        referencias clasificadas por medida, grado y aplicación, con existencias reales y asesoría
+        técnica de verdad.
+      </p>
+      <div class="portada-acciones">
+        <a class="btn btn-rojo" href="/catalogo/">Ver el catálogo completo</a>
+        <a
+          class="btn btn-linea"
+          href={whatsapp('Hola Trackbolt, necesito una referencia de tornillería.')}
+          target="_blank"
+          rel="noopener">Escribir por WhatsApp</a
+        >
+      </div>
+    </div>
+  </section>
+
+  <!-- Cifras -->
+  <section class="oscuro">
+    <div class="contenedor" style="padding-inline:0">
+      <dl class="cifras">
+        <div class="cifra">
+          <dt>Referencias en catálogo</dt>
+          <dd>{totalRef}</dd>
+        </div>
+        <div class="cifra">
+          <dt>Disponibles hoy</dt>
+          <dd>{disponibles}</dd>
+        </div>
+        <div class="cifra">
+          <dt>Entrega en Bogotá</dt>
+          <dd>1–2 días</dd>
+        </div>
+        <div class="cifra">
+          <dt>Años de experiencia</dt>
+          <dd>{empresa.anios}</dd>
+        </div>
+      </dl>
+    </div>
+  </section>
+
+  <!-- Buscador directo -->
+  <section class="seccion-compacta hueso">
+    <div class="contenedor" style="display:flex;flex-wrap:wrap;gap:1rem;align-items:center">
+      <div style="flex:1;min-width:min(100%,320px)">
+        <h2 style="font-size:1.15rem">¿Ya sabes qué necesitas?</h2>
+        <p style="font-size:0.9rem;color:var(--gris);margin-top:0.25rem">
+          Busca por código, medida o número de parte del fabricante. {conParte} referencias de rodaje
+          están cruzadas con el número de parte original.
+        </p>
+      </div>
+      <form action="/catalogo/" method="get" class="buscador" style="flex:1;min-width:min(100%,320px);margin:0">
+        <label class="visualmente-oculto" for="q-inicio">Buscar referencia</label>
+        <input
+          id="q-inicio"
+          type="search"
+          name="q"
+          placeholder="M16 120 10.9, 5/8 x 2, 6Y0846…"
+          autocomplete="off"
+        />
+        <button class="btn btn-negro" type="submit">Buscar</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- Líneas de producto -->
+  <section class="seccion">
+    <div class="contenedor">
+      <div class="cabecera-seccion">
+        <div>
+          <div class="regla"></div>
+          <h2>Líneas de producto</h2>
+          <p class="entradilla" style="margin-top:0.75rem">
+            Todo el inventario reorganizado por tipo de pieza, no por código interno. Cada línea trae
+            filtros por diámetro, largo, grado y acabado.
+          </p>
+        </div>
+        <a class="btn btn-linea" href="/lineas/">Ver todas las líneas</a>
+      </div>
+
+      <div class="rejilla rejilla-3">
+        {
+          lineas.map((l) => (
+            <a class="tarjeta tarjeta-linea" href={`/lineas/${l.slug}/`}>
+              <IconoLinea linea={l.slug} />
+              <h3>{l.nombre}</h3>
+              <p>{l.descripcion}</p>
+              <span class="conteo">{l.total.toLocaleString('es-CO')} referencias →</span>
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Pilares -->
+  <section class="seccion oscuro sobre-oscuro">
+    <div class="contenedor">
+      <div class="cabecera-seccion">
+        <div>
+          <div class="regla"></div>
+          <h2>{empresa.claim}</h2>
+        </div>
+      </div>
+      <dl class="rejilla rejilla-3">
+        {
+          pilares.map((p) => (
+            <div class="tarjeta pilar">
+              <dt>
+                {p.titulo}
+                <small>{p.subtitulo}</small>
+              </dt>
+              <dd>{p.texto}</dd>
+            </div>
+          ))
+        }
+      </dl>
+    </div>
+  </section>
+
+  <!-- Sectores -->
+  <section class="seccion">
+    <div class="contenedor">
+      <div class="cabecera-seccion">
+        <div>
+          <div class="regla"></div>
+          <h2>Para quién trabajamos</h2>
+        </div>
+        <a class="btn btn-linea" href="/sectores/">Detalle por sector</a>
+      </div>
+      <div class="rejilla rejilla-2">
+        {
+          sectores.map((s) => (
+            <a class="tarjeta tarjeta-linea" href={`/sectores/#${s.slug}`}>
+              <h3>{s.nombre}</h3>
+              <p>{s.texto}</p>
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Diferenciales -->
+  <section class="seccion hueso">
+    <div class="contenedor">
+      <div class="cabecera-seccion">
+        <div>
+          <div class="regla"></div>
+          <h2>Por qué nos vuelven a llamar</h2>
+        </div>
+      </div>
+      <div class="rejilla rejilla-4">
+        {
+          diferenciales.map((d) => (
+            <div class="tarjeta">
+              <h3 style="font-size:1rem">{d.titulo}</h3>
+              <p style="font-size:0.88rem;color:var(--gris)">{d.texto}</p>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="franja">
+    <div class="contenedor">
+      <div>
+        <h2>¿No encuentras la referencia?</h2>
+        <p>
+          Mándanos una foto de la pieza, el plano o el número de parte. Si no está en stock, la
+          conseguimos o la fabricamos.
+        </p>
+      </div>
+      <a
+        class="btn btn-linea"
+        href={whatsapp('Hola Trackbolt, no encuentro una referencia en el catálogo. Les envío la foto/plano.')}
+        target="_blank"
+        rel="noopener">Enviar por WhatsApp</a
+      >
+    </div>
+  </section>
+</Base>

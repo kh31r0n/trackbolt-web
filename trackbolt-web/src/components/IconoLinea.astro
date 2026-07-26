@@ -1,0 +1,130 @@
+---
+/** Dibujo técnico de cada línea de producto. Sin imágenes: escala y pesa nada. */
+interface Props {
+  linea: string;
+  tamano?: number;
+}
+const { linea, tamano = 44 } = Astro.props;
+---
+
+<svg
+  class="icono"
+  width={tamano}
+  height={tamano}
+  viewBox="0 0 48 48"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="1.6"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  aria-hidden="true"
+  focusable="false"
+>
+  {
+    linea === 'tornillos-hexagonales' && (
+      <>
+        <path d="M6 16h8v16H6l-3-4v-8z" />
+        <path d="M14 19h30M14 25h30M14 31h26" />
+        <path d="M14 16v16" />
+      </>
+    )
+  }
+  {
+    linea === 'tornillos-flange' && (
+      <>
+        <path d="M8 16h6v16H8l-3-4v-8z" />
+        <path d="M14 12v24" />
+        <path d="M16 19h28M16 25h28M16 31h24" />
+      </>
+    )
+  }
+  {
+    linea === 'tornillos-bristol' && (
+      <>
+        <rect x="5" y="15" width="11" height="18" rx="1" />
+        <path d="M8 20h5v8H8z" />
+        <path d="M16 19h28M16 25h28M16 31h24" />
+      </>
+    )
+  }
+  {
+    linea === 'tuercas' && (
+      <>
+        <path d="M24 6l15.6 9v18L24 42 8.4 33V15z" />
+        <circle cx="24" cy="24" r="7.5" />
+        <path d="M16.5 24h-4M35.5 24h4" />
+      </>
+    )
+  }
+  {
+    linea === 'arandelas' && (
+      <>
+        <circle cx="24" cy="24" r="17" />
+        <circle cx="24" cy="24" r="7" />
+      </>
+    )
+  }
+  {
+    linea === 'rodaje-zapata-cuchilla' && (
+      <>
+        <rect x="4" y="10" width="40" height="12" rx="2" />
+        <path d="M14 22v6M34 22v6" />
+        <path d="M11 28h6v10h-6zM31 28h6v10h-6z" />
+        <path d="M17 33h14" />
+      </>
+    )
+  }
+  {
+    linea === 'pernos-rueda' && (
+      <>
+        <path d="M24 4l9 6v7l-9 5-9-5v-7z" />
+        <path d="M24 22v22" />
+        <path d="M18 27h12M18 32h12M18 37h12" />
+      </>
+    )
+  }
+  {
+    linea === 'esparragos-varillas' && (
+      <>
+        <path d="M4 24h40" />
+        <path d="M8 18v12M14 18v12M20 18v12M28 18v12M34 18v12M40 18v12" />
+      </>
+    )
+  }
+  {
+    linea === 'tornillos-especiales' && (
+      <>
+        <path d="M4 14h20l-6 6h-8z" />
+        <path d="M14 20h4v20l-2 4-2-4z" />
+        <path d="M28 14h16M30 22h14M32 30h12" />
+      </>
+    )
+  }
+  {
+    linea === 'pines-remaches' && (
+      <>
+        <circle cx="12" cy="14" r="6" />
+        <path d="M12 20v22M8 42h8" />
+        <path d="M30 10h12v6H30zM36 16v26" />
+      </>
+    )
+  }
+  {
+    linea === 'herramienta' && (
+      <>
+        <path d="M6 12a6 6 0 018.5-5.4l-3 3 3.5 3.5 3-3A6 6 0 0112 18l-1.5 1.5" />
+        <path d="M10.5 19.5l18 18a4 4 0 005.7-5.7l-18-18" />
+        <circle cx="37" cy="12" r="7" />
+        <path d="M37 5v14M30 12h14" />
+      </>
+    )
+  }
+  {
+    linea === 'otros' && (
+      <>
+        <circle cx="24" cy="24" r="17" />
+        <path d="M24 15v12M24 32h.01" />
+      </>
+    )
+  }
+</svg>

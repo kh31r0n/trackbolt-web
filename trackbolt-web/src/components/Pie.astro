@@ -1,0 +1,76 @@
+---
+import lineas from '../../data/generado/lineas.json';
+import reporte from '../../data/generado/reporte.json';
+import { empresa } from '../data/sitio';
+
+const anio = 2026;
+const actualizado = new Date(reporte.generado_en).toLocaleDateString('es-CO', {
+  day: '2-digit',
+  month: 'long',
+  year: 'numeric',
+});
+const destacadas = lineas.filter((l) => l.destacada).slice(0, 6);
+---
+
+<footer class="pie">
+  <div class="contenedor">
+    <div class="pie-rejilla">
+      <div>
+        <h3>Trackbolt</h3>
+        <p style="max-width:30ch">
+          {empresa.descripcion}
+        </p>
+        <p style="margin-top:1rem;font-weight:700;color:#fff">{empresa.claim}</p>
+      </div>
+
+      <div>
+        <h3>Líneas</h3>
+        <ul>
+          {destacadas.map((l) => <li><a href={`/lineas/${l.slug}/`}>{l.nombre}</a></li>)}
+          <li><a href="/lineas/">Ver todas</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h3>Empresa</h3>
+        <ul>
+          <li><a href="/nosotros/">Nosotros</a></li>
+          <li><a href="/sectores/">Sectores que atendemos</a></li>
+          <li><a href="/faq/">Preguntas frecuentes</a></li>
+          <li><a href="/noticias/">Noticias</a></li>
+          <li><a href="/contacto/">Contacto</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h3>Contacto</h3>
+        <ul>
+          {
+            empresa.telefonos.map((t) => (
+              <li>
+                <a href={`https://wa.me/${t.wa}`} target="_blank" rel="noopener">{t.numero}</a>
+              </li>
+            ))
+          }
+          <li><a href={`mailto:${empresa.email}`}>{empresa.email}</a></li>
+          <li>{empresa.direccion}<br />{empresa.ciudad}</li>
+          {
+            empresa.redes.map((r) => (
+              <li>
+                <a href={r.url} target="_blank" rel="noopener">{r.nombre} {r.usuario}</a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </div>
+
+    <div class="pie-legal">
+      <span>© {anio} Trackbolt. Todos los derechos reservados.</span>
+      <span>
+        Catálogo de {reporte.total_referencias.toLocaleString('es-CO')} referencias · actualizado el {actualizado}
+      </span>
+      <a href="/interno/">Vista interna</a>
+    </div>
+  </div>
+</footer>

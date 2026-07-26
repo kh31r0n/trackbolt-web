@@ -1,0 +1,26 @@
+---
+import Base from '../layouts/Base.astro';
+import { whatsapp } from '../data/sitio';
+---
+
+<Base titulo="Página no encontrada" descripcion="La página que buscas no existe." noindex={true}>
+  <section class="seccion">
+    <div class="contenedor" style="max-width:52ch">
+      <div class="regla"></div>
+      <h1 style="font-size:clamp(1.8rem,5vw,3rem)">Esta página no existe</h1>
+      <p class="entradilla" style="margin-top:1rem">
+        Puede que la referencia haya cambiado de código o que el enlace esté incompleto. Busca en el
+        catálogo o escríbenos con el código que tenías.
+      </p>
+      <div style="display:flex;flex-wrap:wrap;gap:0.75rem;margin-top:2rem">
+        <a class="btn btn-rojo" href="/catalogo/">Ir al catálogo</a>
+        <a
+          class="btn btn-linea"
+          href={whatsapp('Hola Trackbolt, busco una referencia y el enlace que tenía no funciona.')}
+          target="_blank"
+          rel="noopener">Preguntar por WhatsApp</a
+        >
+      </div>
+    </div>
+  </section>
+</Base>

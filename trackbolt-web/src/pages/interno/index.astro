@@ -1,0 +1,205 @@
+---
+import Base from '../../layouts/Base.astro';
+import lineas from '../../../data/generado/lineas.json';
+import reporte from '../../../data/generado/reporte.json';
+import { MULTIPLICADORES } from '../../data/precios';
+
+const actualizado = new Date(reporte.generado_en).toLocaleString('es-CO');
+const valor = new Intl.NumberFormat('es-CO', {
+  style: 'currency',
+  currency: 'COP',
+  maximumFractionDigits: 0,
+}).format(reporte.valor_inventario);
+---
+
+<Base
+  titulo="Vista interna del inventario"
+  descripcion="Costos, cantidades y niveles de precio. Uso interno."
+  noindex={true}
+>
+  <div class="contenedor" style="padding-block:1.5rem 3rem">
+    <div
+      style="border-left:4px solid var(--rojo);background:var(--hueso);padding:1rem 1.25rem;margin-bottom:2rem"
+    >
+      <p style="font-weight:800;font-size:0.9rem">Vista interna — prueba de concepto</p>
+      <p style="font-size:0.86rem;color:var(--gris);margin-top:0.3rem">
+        Esta página muestra costos, cantidades exactas y los cuatro niveles de precio. Está marcada
+        como <span class="mono">noindex</span> y excluida del sitemap, pero <strong>no tiene
+        contraseña</strong>. Antes de producción hay que protegerla (Basic Auth en el hosting o
+        Cloudflare Access).
+      </p>
+    </div>
+
+    <div class="regla"></div>
+    <h1 style="font-size:clamp(1.6rem,3.5vw,2.2rem)">Inventario interno</h1>
+
+    <dl class="cifras" style="background:var(--borde);margin-top:1.5rem;border-color:var(--borde)">
+      <div class="cifra" style="background:#fff">
+        <dt style="color:var(--gris)">Referencias</dt>
+        <dd style="color:var(--tinta)">{reporte.total_referencias.toLocaleString('es-CO')}</dd>
+      </div>
+      <div class="cifra" style="background:#fff">
+        <dt style="color:var(--gris)">Valor del inventario</dt>
+        <dd style="color:var(--tinta);font-size:clamp(1.1rem,2.2vw,1.5rem)">{valor}</dd>
+      </div>
+      <div class="cifra" style="background:#fff">
+        <dt style="color:var(--gris)">Disponibles / pocas / pedido</dt>
+        <dd style="color:var(--tinta);font-size:clamp(1.1rem,2.2vw,1.5rem)">
+          {reporte.por_estado.disponible ?? 0} / {reporte.por_estado.pocas ?? 0} / {reporte.por_estado.pedido ?? 0}
+        </dd>
+      </div>
+      <div class="cifra" style="background:#fff">
+        <dt style="color:var(--gris)">Generado</dt>
+        <dd style="color:var(--tinta);font-size:0.95rem;font-family:var(--texto);font-weight:600">
+          {actualizado}
+        </dd>
+      </div>
+    </dl>
+
+    <p style="font-size:0.84rem;color:var(--gris);margin-top:1rem">
+      Multiplicadores sobre el costo promedio: mostrador ×{MULTIPLICADORES.mostrador} · usuario final
+      ×{MULTIPLICADORES.usuario_final} (precio publicado) · almacén ×{MULTIPLICADORES.almacen} ·
+      mayorista ×{MULTIPLICADORES.mayorista}. Redondeo a $50.
+    </p>
+
+    <div style="display:flex;flex-wrap:wrap;gap:0.5rem;margin-top:2rem">
+      <input
+        type="search"
+        id="qi"
+        placeholder="Buscar código, nombre o sublínea…"
+        style="flex:1;min-width:min(100%,260px);padding:0.7rem 0.9rem;border:2px solid var(--negro);border-radius:3px"
+      />
+      <select id="li" style="padding:0.7rem 0.9rem;border:1px solid var(--borde);border-radius:3px">
+        <option value="">Todas las líneas</option>
+        {lineas.map((l) => <option value={l.nombre}>{l.nombre}</option>)}
+      </select>
+      <button class="btn btn-negro" id="csv">Descargar CSV</button>
+    </div>
+
+    <p style="margin-top:1rem;font-size:0.86rem;font-weight:700" id="resumen">Cargando…</p>
+
+    <div class="envoltorio-tabla" style="margin-top:0.75rem">
+      <table class="tabla-datos">
+        <thead>
+          <tr>
+            <th>Código</th>
+            <th>Nombre comercial</th>
+            <th>Línea</th>
+            <th>Sublínea ERP</th>
+            <th>Un.</th>
+            <th style="text-align:right">Cantidad</th>
+            <th style="text-align:right">Costo prom.</th>
+            <th style="text-align:right">Valor inv.</th>
+            <th style="text-align:right">Mostrador</th>
+            <th style="text-align:right">Usuario final</th>
+            <th style="text-align:right">Almacén</th>
+            <th style="text-align:right">Mayorista</th>
+          </tr>
+        </thead>
+        <tbody id="cuerpo"></tbody>
+      </table>
+    </div>
+    <button class="btn btn-linea mas-resultados oculto" id="masi">Ver más filas</button>
+  </div>
+</Base>
+
+<script>
+  const LOTE = 200;
+  const cuerpo = document.getElementById('cuerpo') as HTMLElement;
+  const resumen = document.getElementById('resumen') as HTMLElement;
+  const q = document.getElementById('qi') as HTMLInputElement;
+  const sel = document.getElementById('li') as HTMLSelectElement;
+  const mas = document.getElementById('masi') as HTMLButtonElement;
+  const csv = document.getElementById('csv') as HTMLButtonElement;
+
+  const num = new Intl.NumberFormat('es-CO', { maximumFractionDigits: 0 });
+  let filas: any[] = [];
+  let vista: any[] = [];
+  let mostradas = 0;
+
+  const norm = (t: string) => t.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  const m = (v: number | null) => (v == null ? '—' : num.format(v));
+
+  function aplicar() {
+    const texto = norm(q.value.trim());
+    const linea = sel.value;
+    vista = filas.filter(
+      (f) => (!linea || f.l === linea) && (!texto || f._b.includes(texto))
+    );
+    const valor = vista.reduce((a, f) => a + (f.v || 0), 0);
+    const unidades = vista.reduce((a, f) => a + (f.q || 0), 0);
+    resumen.textContent =
+      `${num.format(vista.length)} referencias · ${num.format(unidades)} unidades · ` +
+      `valor ${num.format(valor)} COP`;
+    cuerpo.innerHTML = '';
+    mostradas = 0;
+    pintar();
+  }
+
+  function pintar() {
+    const trozo = vista.slice(mostradas, mostradas + LOTE);
+    cuerpo.insertAdjacentHTML(
+      'beforeend',
+      trozo
+        .map(
+          (f) => `<tr>
+      <td class="mono"><a href="/producto/${f.c}/">${f.c}</a></td>
+      <td style="white-space:normal;min-width:22rem">${f.n}</td>
+      <td>${f.l}</td>
+      <td>${f.s}</td>
+      <td>${f.u}</td>
+      <td class="num">${m(f.q)}</td>
+      <td class="num">${m(f.k)}</td>
+      <td class="num">${m(f.v)}</td>
+      <td class="num">${m(f.m)}</td>
+      <td class="num" style="font-weight:700">${m(f.f)}</td>
+      <td class="num">${m(f.a)}</td>
+      <td class="num">${m(f.y)}</td>
+    </tr>`
+        )
+        .join('')
+    );
+    mostradas += trozo.length;
+    mas.classList.toggle('oculto', mostradas >= vista.length);
+    mas.textContent = `Ver más filas (quedan ${num.format(vista.length - mostradas)})`;
+  }
+
+  function descargar() {
+    const cabecera = [
+      'codigo', 'nombre', 'linea', 'sublinea_erp', 'unidad', 'cantidad',
+      'costo_promedio', 'valor_inventario', 'mostrador', 'usuario_final', 'almacen', 'mayorista',
+    ];
+    const escapar = (v: any) => `"${String(v ?? '').replace(/"/g, '""')}"`;
+    const cuerpoCsv = vista
+      .map((f) => [f.c, f.n, f.l, f.s, f.u, f.q, f.k, f.v, f.m, f.f, f.a, f.y].map(escapar).join(';'))
+      .join('\n');
+    const blob = new Blob(['﻿' + cabecera.join(';') + '\n' + cuerpoCsv], {
+      type: 'text/csv;charset=utf-8',
+    });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'trackbolt-inventario-interno.csv';
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }
+
+  let t: number;
+  q.addEventListener('input', () => {
+    clearTimeout(t);
+    t = window.setTimeout(aplicar, 130);
+  });
+  sel.addEventListener('change', aplicar);
+  mas.addEventListener('click', pintar);
+  csv.addEventListener('click', descargar);
+
+  fetch('/datos/interno.json')
+    .then((r) => r.json())
+    .then((datos) => {
+      filas = datos;
+      for (const f of filas) f._b = norm([f.c, f.n, f.s, f.l].join(' '));
+      aplicar();
+    })
+    .catch(() => {
+      resumen.textContent = 'No se pudo cargar el inventario interno.';
+    });
+</script>

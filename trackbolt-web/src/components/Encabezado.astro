@@ -1,0 +1,50 @@
+---
+import Logo from './Logo.astro';
+import { whatsapp } from '../data/sitio';
+
+const ruta = Astro.url.pathname;
+const enlaces = [
+  { href: '/lineas/', texto: 'Líneas de producto' },
+  { href: '/catalogo/', texto: 'Catálogo' },
+  { href: '/sectores/', texto: 'Sectores' },
+  { href: '/nosotros/', texto: 'Nosotros' },
+  { href: '/faq/', texto: 'Preguntas frecuentes' },
+  { href: '/contacto/', texto: 'Contacto' },
+];
+const activo = (href: string) => (ruta === href || ruta.startsWith(href) ? 'page' : undefined);
+---
+
+<header class="encabezado">
+  <div class="contenedor encabezado-fila">
+    <Logo />
+
+    <nav class="nav" aria-label="Navegación principal">
+      {enlaces.map((e) => <a href={e.href} aria-current={activo(e.href)}>{e.texto}</a>)}
+      <a
+        class="btn btn-rojo btn-pequeno"
+        style="margin-left:0.75rem"
+        href={whatsapp('Hola Trackbolt, necesito asesoría con una referencia.')}
+        target="_blank"
+        rel="noopener">Cotizar por WhatsApp</a
+      >
+    </nav>
+
+    <details class="menu-movil">
+      <summary aria-label="Abrir menú">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M3 6h18M3 12h18M3 18h18"></path>
+        </svg>
+      </summary>
+      <div class="panel">
+        {enlaces.map((e) => <a href={e.href} aria-current={activo(e.href)}>{e.texto}</a>)}
+        <a
+          class="btn btn-rojo"
+          style="margin-top:1rem;justify-content:center"
+          href={whatsapp('Hola Trackbolt, necesito asesoría con una referencia.')}
+          target="_blank"
+          rel="noopener">Cotizar por WhatsApp</a
+        >
+      </div>
+    </details>
+  </div>
+</header>

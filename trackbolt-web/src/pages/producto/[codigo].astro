@@ -1,0 +1,201 @@
+---
+import Base from '../../layouts/Base.astro';
+import lineas from '../../../data/generado/lineas.json';
+import { empresa, whatsapp } from '../../data/sitio';
+import { productos, relacionados as buscarRelacionados, cop } from '../../data/indice';
+
+export function getStaticPaths() {
+  return productos.map((p) => ({ params: { codigo: p.codigo }, props: { producto: p } }));
+}
+
+const { producto } = Astro.props as { producto: any };
+const e = producto.especificaciones;
+const linea = (lineas as any[]).find((l) => l.slug === producto.linea);
+const relacionados = buscarRelacionados(producto);
+
+const etiquetaSistema: Record<string, string> = { metrico: 'Métrico (milímetros)', pulgadas: 'Pulgadas' };
+
+const filas = [
+  ['Código de referencia', producto.codigo],
+  ['Número de parte del fabricante', producto.numero_parte],
+  ['Referencia del fabricante', producto.referencia_fabricante],
+  ['Línea', linea?.nombre],
+  ['Grupo', producto.grupo],
+  ['Sistema de medida', e.sistema ? etiquetaSistema[e.sistema] : null],
+  ['Diámetro', e.diametro],
+  ['Largo', e.largo],
+  ['Paso de rosca', e.paso],
+  ['Serie de rosca', e.rosca_serie],
+  ['Longitud de rosca', e.rosca_largo],
+  ['Grado / clase de resistencia', e.grado],
+  ['Material y acabado', e.acabado],
+  ['Tipo de cabeza', e.cabeza],
+  ['Marca de vehículo', e.vehiculo],
+  ['Unidad de venta', producto.unidad === 'RO' ? 'Rollo' : 'Unidad'],
+  ['Descripción del sistema', producto.descripcion_erp],
+].filter(([, v]) => v);
+
+const mensaje =
+  `Hola Trackbolt, me interesa la referencia ${producto.codigo} — ${producto.nombre}` +
+  (producto.numero_parte ? ` (parte ${producto.numero_parte})` : '') +
+  '. ¿Me confirman disponibilidad y precio por cantidad?';
+
+const disponibilidad =
+  producto.estado === 0 ? 'https://schema.org/PreOrder' : 'https://schema.org/InStock';
+---
+
+<Base
+  titulo={`${producto.nombre} — Ref. ${producto.codigo}`}
+  descripcion={`${producto.nombre}. ${e.grado ?? ''} ${e.acabado ?? ''}. Referencia ${producto.codigo}${
+    producto.numero_parte ? `, número de parte ${producto.numero_parte}` : ''
+  }. ${producto.estado_texto} en Trackbolt, Bogotá.`}
+  jsonld={{
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: producto.nombre,
+    sku: producto.codigo,
+    mpn: producto.numero_parte ?? undefined,
+    category: linea?.nombre,
+    brand: { '@type': 'Brand', name: producto.es_rex ? 'REX' : 'Trackbolt' },
+    description: `${producto.nombre}. ${producto.descripcion_erp}`,
+    offers: producto.precio
+      ? {
+          '@type': 'Offer',
+          price: producto.precio,
+          priceCurrency: 'COP',
+          availability: disponibilidad,
+          seller: { '@type': 'Organization', name: 'Trackbolt' },
+        }
+      : undefined,
+  }}
+>
+  <div class="contenedor">
+    <nav class="miga" aria-label="Ruta">
+      <a href="/">Inicio</a>
+      <span aria-hidden="true">/</span>
+      <a href="/lineas/">Líneas</a>
+      <span aria-hidden="true">/</span>
+      <a href={`/lineas/${producto.linea}/`}>{linea?.nombre}</a>
+      <span aria-hidden="true">/</span>
+      <span class="mono">{producto.codigo}</span>
+    </nav>
+
+    <div class="ficha">
+      <div>
+        <p class="etiqueta">
+          {producto.grupo}
+          {producto.es_rex && <span class="sello-rex" style="margin-left:0.5rem">REX</span>}
+        </p>
+        <h1>{producto.nombre}</h1>
+
+        <p style="font-size:0.9rem;color:var(--gris)">
+          Referencia <strong class="mono" style="color:var(--tinta)">{producto.codigo}</strong>
+          {
+            producto.numero_parte && (
+              <>
+                {' '}· número de parte{' '}
+                <strong class="mono" style="color:var(--tinta)">{producto.numero_parte}</strong>
+              </>
+            )
+          }
+        </p>
+
+        <table class="tabla-especificaciones">
+          <caption class="visualmente-oculto">Especificaciones técnicas</caption>
+          <tbody>
+            {
+              filas.map(([k, v]) => (
+                <tr>
+                  <th scope="row">{k}</th>
+                  <td>{v}</td>
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+
+        {
+          e.grado && (
+            <p style="margin-top:1.5rem;font-size:0.86rem;color:var(--gris);max-width:60ch">
+              ¿Dudas con el grado o la medida? Revisa la{' '}
+              <a href="/faq/" style="color:var(--rojo);text-decoration:underline">guía de grados y medidas</a>{' '}
+              o escríbenos: identificamos la pieza a partir de una foto.
+            </p>
+          )
+        }
+      </div>
+
+      <aside class="panel-compra">
+        {
+          producto.precio ? (
+            <>
+              <p style="font-size:0.74rem;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:var(--gris)">
+                Precio al público
+              </p>
+              <p class="precio-grande">{cop(producto.precio)}</p>
+              <p class="nota">Por {producto.unidad === 'RO' ? 'rollo' : 'unidad'}, IVA no incluido. Precios diferenciales por volumen.</p>
+            </>
+          ) : (
+            <>
+              <p class="precio-grande" style="font-size:1.4rem">Precio a confirmar</p>
+              <p class="nota">Esta referencia requiere confirmación de precio. Escríbenos y te respondemos el mismo día.</p>
+            </>
+          )
+        }
+
+        <p style="margin-top:1rem">
+          <span class={`estado estado-${producto.estado_clave}`}>{producto.estado_texto}</span>
+          <span style="display:block;font-size:0.8rem;color:var(--gris);margin-top:0.25rem">
+            {producto.estado_detalle}
+          </span>
+        </p>
+
+        <a class="btn btn-rojo" href={whatsapp(mensaje)} target="_blank" rel="noopener">
+          Cotizar esta referencia
+        </a>
+        <a class="btn btn-linea" href={`mailto:${empresa.email}?subject=${encodeURIComponent(`Cotización ref. ${producto.codigo}`)}&body=${encodeURIComponent(mensaje)}`}>
+          Cotizar por correo
+        </a>
+
+        <ul style="list-style:none;padding:0;margin-top:1.25rem;display:flex;flex-direction:column;gap:0.5rem;font-size:0.82rem;color:var(--gris)">
+          <li>Bogotá: entrega en 1 a 2 días hábiles</li>
+          <li>Resto del país: 2 a 5 días hábiles</li>
+          <li>Sin pedido mínimo · descuento por cantidad</li>
+          <li>Garantía contra defectos de fabricación</li>
+        </ul>
+      </aside>
+    </div>
+  </div>
+
+  {
+    relacionados.length > 0 && (
+      <section class="seccion-compacta relacionados">
+        <div class="contenedor">
+          <div class="cabecera-seccion" style="margin-bottom:1.25rem">
+            <div>
+              <div class="regla"></div>
+              <h2 style="font-size:1.25rem">Otras medidas de {producto.grupo.toLowerCase()}</h2>
+            </div>
+            <a class="btn btn-linea btn-pequeno" href={`/lineas/${producto.linea}/`}>Ver la línea completa</a>
+          </div>
+          <div class="lista-productos">
+            {relacionados.map((p) => (
+              <a class="producto" href={`/producto/${p.codigo}/`}>
+                <span>
+                  <span class="codigo">Ref. {p.codigo}</span>
+                  <span class="nombre" style="display:block">{p.nombre}</span>
+                </span>
+                <span class="derecha">
+                  <span class="precio">
+                    {p.precio ? cop(p.precio) : 'A confirmar'}
+                  </span>
+                  <span class={`estado estado-${p.estado_clave}`}>{p.estado_texto}</span>
+                </span>
+              </a>
+            ))}
+          </div>
+        </div>
+      </section>
+    )
+  }
+</Base>

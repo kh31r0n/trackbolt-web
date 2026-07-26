@@ -1,0 +1,134 @@
+---
+import Base from '../layouts/Base.astro';
+import { empresa, whatsapp } from '../data/sitio';
+---
+
+<Base
+  titulo="Contacto"
+  descripcion="Calle 6 #24-16 Ricaurte, Bogotá. WhatsApp +57 310 816 8003 · operaciones@trackbolt.co. Envíos a toda Colombia."
+>
+  <section class="portada sobre-oscuro">
+    <div class="contenedor portada-contenido" style="max-width:52rem">
+      <p class="etiqueta">Contacto</p>
+      <h1 style="font-size:clamp(2.1rem,6vw,4rem)">
+        Estamos<br /><span class="rojo">para ayudarte</span>
+      </h1>
+      <p class="entradilla">
+        Contáctanos para conocer tus necesidades y darte la mejor asesoría. Respondemos por WhatsApp
+        en horario laboral.
+      </p>
+    </div>
+  </section>
+
+  <section class="seccion">
+    <div class="contenedor" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:clamp(2rem,5vw,3.5rem)">
+      <div>
+        <div class="regla"></div>
+        <h2 style="font-size:1.5rem">Canales directos</h2>
+
+        <dl style="margin-top:1.75rem;display:flex;flex-direction:column;gap:1.5rem">
+          {
+            empresa.telefonos.map((t) => (
+              <div>
+                <dt style="font-size:0.74rem;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:var(--gris)">
+                  {t.etiqueta}
+                </dt>
+                <dd style="font-size:1.2rem;font-weight:700;margin-top:0.25rem">
+                  <a href={`https://wa.me/${t.wa}`} target="_blank" rel="noopener">{t.numero}</a>
+                </dd>
+              </div>
+            ))
+          }
+          <div>
+            <dt style="font-size:0.74rem;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:var(--gris)">
+              Correo
+            </dt>
+            <dd style="font-size:1.1rem;font-weight:700;margin-top:0.25rem">
+              <a href={`mailto:${empresa.email}`}>{empresa.email}</a>
+            </dd>
+          </div>
+          <div>
+            <dt style="font-size:0.74rem;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:var(--gris)">
+              Dirección
+            </dt>
+            <dd style="font-size:1.05rem;margin-top:0.25rem">
+              {empresa.direccion}<br />{empresa.ciudad}
+            </dd>
+          </div>
+          <div>
+            <dt style="font-size:0.74rem;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:var(--gris)">
+              Redes
+            </dt>
+            <dd style="margin-top:0.25rem">
+              {
+                empresa.redes.map((r) => (
+                  <a href={r.url} target="_blank" rel="noopener" style="display:block;font-weight:600">
+                    {r.nombre} — {r.usuario}
+                  </a>
+                ))
+              }
+            </dd>
+          </div>
+        </dl>
+
+        <a
+          class="btn btn-rojo"
+          style="margin-top:2rem"
+          href={whatsapp('Hola Trackbolt, quiero hacer un pedido.')}
+          target="_blank"
+          rel="noopener">Abrir WhatsApp</a
+        >
+      </div>
+
+      <div>
+        <img
+          src="/img/marca/servicio-cliente.jpeg"
+          alt="Atención al cliente de Trackbolt: servicio personalizado, soluciones rápidas y confianza"
+          width="591"
+          height="1265"
+          loading="lazy"
+          style="border:1px solid var(--borde);max-height:520px;object-fit:cover;width:100%"
+        />
+
+        <div class="tarjeta" style="border:1px solid var(--borde);margin-top:1.5rem">
+          <h3 style="font-size:1rem">Cómo hacer un pedido</h3>
+          <ol style="padding-left:1.2rem;font-size:0.9rem;color:var(--gris);display:flex;flex-direction:column;gap:0.5rem;margin-top:0.5rem">
+            <li>Busca la referencia en el <a href="/catalogo/" style="color:var(--rojo)">catálogo</a> y toma nota del código.</li>
+            <li>Envíanos el código por WhatsApp o correo, con la cantidad.</li>
+            <li>Confirmamos disponibilidad, precio por cantidad y tiempo de entrega.</li>
+            <li>Pagas por transferencia, tarjeta, Nequi, Daviplata o efectivo y despachamos.</li>
+          </ol>
+          <p style="font-size:0.82rem;color:var(--gris);margin-top:0.75rem">
+            También puedes recoger en nuestra bodega en Bogotá coordinándolo antes por WhatsApp.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="seccion-compacta hueso">
+    <div class="contenedor">
+      <div class="rejilla rejilla-3">
+        <div class="tarjeta" style="background:var(--hueso)">
+          <h3 style="font-size:1rem">Cobertura</h3>
+          <p style="font-size:0.9rem;color:var(--gris)">
+            Envíos a cualquier ciudad o municipio de Colombia con transportadoras aliadas.
+          </p>
+        </div>
+        <div class="tarjeta" style="background:var(--hueso)">
+          <h3 style="font-size:1rem">Tiempos de entrega</h3>
+          <p style="font-size:0.9rem;color:var(--gris)">
+            Bogotá y alrededores: 1 a 2 días hábiles. Resto del país: 2 a 5 días hábiles.
+          </p>
+        </div>
+        <div class="tarjeta" style="background:var(--hueso)">
+          <h3 style="font-size:1rem">Medios de pago</h3>
+          <p style="font-size:0.9rem;color:var(--gris)">
+            Tarjetas de crédito y débito, transferencia bancaria, Nequi, Daviplata y efectivo en
+            puntos autorizados.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+</Base>

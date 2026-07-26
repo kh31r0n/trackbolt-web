@@ -1,0 +1,72 @@
+---
+import Base from '../layouts/Base.astro';
+import IconoLinea from '../components/IconoLinea.astro';
+import lineas from '../../data/generado/lineas.json';
+import { sectores, whatsapp } from '../data/sitio';
+
+const porSlug = new Map((lineas as any[]).map((l) => [l.slug, l]));
+---
+
+<Base
+  titulo="Sectores que atendemos"
+  descripcion="Maquinaria pesada y construcción, transporte público de pasajeros, agroindustria e industria general: tornillería de alta resistencia para cada operación."
+>
+  <section class="portada sobre-oscuro">
+    <div class="contenedor portada-contenido" style="max-width:52rem">
+      <p class="etiqueta">Sectores</p>
+      <h1 style="font-size:clamp(2.1rem,6vw,4rem)">
+        Donde el tornillo<br /><span class="rojo">no puede fallar</span>
+      </h1>
+      <p class="entradilla">
+        Cada sector rompe la tornillería de una manera distinta: vibración, impacto, abrasión o
+        corrosión. Estas son las líneas que recomendamos en cada caso.
+      </p>
+    </div>
+  </section>
+
+  {
+    sectores.map((s, i) => (
+      <section class={`seccion ${i % 2 === 1 ? 'hueso' : ''}`} id={s.slug}>
+        <div class="contenedor">
+          <div style="max-width:60ch">
+            <div class="regla"></div>
+            <h2>{s.nombre}</h2>
+            <p class="entradilla" style="margin-top:0.75rem">{s.texto}</p>
+          </div>
+
+          <div class="rejilla rejilla-3" style="margin-top:2rem">
+            {s.lineas.map((slug) => {
+              const l = porSlug.get(slug);
+              return l ? (
+                <a class="tarjeta tarjeta-linea" href={`/lineas/${l.slug}/`}>
+                  <IconoLinea linea={l.slug} tamano={36} />
+                  <h3 style="font-size:1rem">{l.nombre}</h3>
+                  <p>{l.descripcion}</p>
+                  <span class="conteo">{l.total.toLocaleString('es-CO')} referencias →</span>
+                </a>
+              ) : null;
+            })}
+          </div>
+        </div>
+      </section>
+    ))
+  }
+
+  <section class="franja">
+    <div class="contenedor">
+      <div>
+        <h2>Fabricación especial</h2>
+        <p>
+          Si tu máquina necesita una pieza que no es comercial, la fabricamos bajo plano o contra
+          muestra física: espárragos especiales, largos fuera de estándar y acabados específicos.
+        </p>
+      </div>
+      <a
+        class="btn btn-linea"
+        href={whatsapp('Hola Trackbolt, necesito una fabricación especial. Les envío el plano o la muestra.')}
+        target="_blank"
+        rel="noopener">Cotizar fabricación</a
+      >
+    </div>
+  </section>
+</Base>

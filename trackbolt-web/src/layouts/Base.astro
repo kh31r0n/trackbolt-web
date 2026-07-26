@@ -1,0 +1,73 @@
+---
+import '../styles/global.css';
+import Encabezado from '../components/Encabezado.astro';
+import Pie from '../components/Pie.astro';
+import { empresa } from '../data/sitio';
+
+interface Props {
+  titulo: string;
+  descripcion: string;
+  noindex?: boolean;
+  jsonld?: object | null;
+}
+
+const { titulo, descripcion, noindex = false, jsonld = null } = Astro.props;
+const canonica = new URL(Astro.url.pathname, Astro.site ?? 'https://trackbolt.co').href;
+const tituloCompleto = titulo.includes('Trackbolt') ? titulo : `${titulo} | Trackbolt`;
+---
+
+<!doctype html>
+<html lang="es-CO">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{tituloCompleto}</title>
+    <meta name="description" content={descripcion} />
+    <link rel="canonical" href={canonica} />
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
+    <meta name="theme-color" content="#0a0a0a" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Trackbolt" />
+    <meta property="og:title" content={tituloCompleto} />
+    <meta property="og:description" content={descripcion} />
+    <meta property="og:url" content={canonica} />
+    <meta property="og:locale" content="es_CO" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    {jsonld && <script type="application/ld+json" set:html={JSON.stringify(jsonld)} />}
+    <script
+      type="application/ld+json"
+      set:html={JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'Organization',
+        name: empresa.nombre,
+        description: empresa.descripcion,
+        url: 'https://trackbolt.co',
+        email: empresa.email,
+        telephone: empresa.telefonos.map((t) => t.numero),
+        address: {
+          '@type': 'PostalAddress',
+          streetAddress: empresa.direccion,
+          addressLocality: 'Bogotá',
+          addressCountry: 'CO',
+        },
+        sameAs: empresa.redes.map((r) => r.url),
+        slogan: empresa.lema,
+      })}
+    />
+  </head>
+  <body>
+    <a
+      href="#contenido"
+      class="visualmente-oculto"
+      style="position:absolute;top:0;left:0;z-index:100">Saltar al contenido</a
+    >
+    <Encabezado />
+    <main id="contenido">
+      <slot />
+    </main>
+    <Pie />
+  </body>
+</html>

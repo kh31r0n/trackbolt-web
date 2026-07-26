@@ -1,0 +1,68 @@
+---
+import Base from '../../layouts/Base.astro';
+import IconoLinea from '../../components/IconoLinea.astro';
+import lineas from '../../../data/generado/lineas.json';
+import { COLECCIONES } from '../../data/colecciones';
+---
+
+<Base
+  titulo="Líneas de producto"
+  descripcion="Tornillería organizada por tipo de pieza: rodaje, hexagonales, Bristol, tuercas, arandelas, pernos de rueda, espárragos y herramienta."
+>
+  <div class="contenedor">
+    <nav class="miga" aria-label="Ruta">
+      <a href="/">Inicio</a>
+      <span aria-hidden="true">/</span>
+      <span>Líneas de producto</span>
+    </nav>
+    <div style="max-width:62ch;padding-bottom:2.5rem">
+      <div class="regla"></div>
+      <h1 style="font-size:clamp(1.8rem,4vw,2.6rem)">Líneas de producto</h1>
+      <p class="entradilla" style="margin-top:0.75rem">
+        Once líneas que agrupan todo el inventario por tipo de pieza. Dentro de cada una puedes
+        filtrar por diámetro, largo, grado, material y disponibilidad.
+      </p>
+    </div>
+  </div>
+
+  <section class="seccion-compacta">
+    <div class="contenedor">
+      <div class="rejilla rejilla-3">
+        {
+          lineas.map((l) => (
+            <a class="tarjeta tarjeta-linea" href={`/lineas/${l.slug}/`}>
+              <IconoLinea linea={l.slug} />
+              <h3>{l.nombre}</h3>
+              <p>{l.descripcion}</p>
+              <span class="conteo">{l.total.toLocaleString('es-CO')} referencias →</span>
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="seccion hueso">
+    <div class="contenedor">
+      <div class="cabecera-seccion">
+        <div>
+          <div class="regla"></div>
+          <h2>Búsquedas frecuentes</h2>
+          <p class="entradilla" style="margin-top:0.75rem">
+            Selecciones que atraviesan todas las líneas: mismo material o misma clase de resistencia.
+          </p>
+        </div>
+      </div>
+      <div class="rejilla rejilla-3">
+        {
+          COLECCIONES.map((c) => (
+            <a class="tarjeta tarjeta-linea" href={c.url}>
+              <h3 style="font-size:1rem">{c.nombre}</h3>
+              <p>{c.descripcion}</p>
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+</Base>

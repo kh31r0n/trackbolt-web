@@ -1,0 +1,150 @@
+---
+import Base from '../layouts/Base.astro';
+import reporte from '../../data/generado/reporte.json';
+import { empresa, pilares, diferenciales, whatsapp } from '../data/sitio';
+
+const totalRef = reporte.total_referencias.toLocaleString('es-CO');
+---
+
+<Base
+  titulo="Nosotros"
+  descripcion="Trackbolt importa, distribuye y fabrica tornillería de alta resistencia para maquinaria pesada, industria y vehículos. 20+ años, sede en Bogotá, envíos a toda Colombia."
+>
+  <section class="portada sobre-oscuro">
+    <div class="contenedor portada-contenido" style="max-width:52rem">
+      <p class="etiqueta">Nosotros</p>
+      <h1 style="font-size:clamp(2.1rem,6vw,4rem)">
+        No vendemos tornillos,<br /><span class="rojo">vendemos soluciones</span>
+      </h1>
+      <p class="entradilla">{empresa.descripcion}</p>
+    </div>
+  </section>
+
+  <section class="seccion">
+    <div class="contenedor" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:clamp(2rem,5vw,4rem)">
+      <div class="prosa">
+        <div class="regla"></div>
+        <h2 style="margin-top:0">Qué hacemos</h2>
+        <p>
+          Trackbolt está especializada en la importación, distribución y fabricación de tornillería
+          para maquinaria, la industria en general y vehículos. Trabajamos donde el tornillo no es un
+          accesorio sino una pieza estructural: tren de rodaje de excavadora, cuchillas de cargador,
+          ruedas de bus, implementos agrícolas y montaje industrial.
+        </p>
+        <p>
+          Hoy el catálogo activo tiene <strong>{totalRef} referencias</strong> clasificadas por medida,
+          grado y aplicación, y crece con cada proyecto que atendemos. Cuando una referencia no existe
+          en el mercado local, la importamos o la fabricamos bajo plano.
+        </p>
+        <h3>Los tres problemas que resolvemos</h3>
+        <ul>
+          <li>
+            <strong>Entregas que fallan.</strong> Manejamos stock programado por cliente para que la
+            referencia crítica esté antes de que la pidan.
+          </li>
+          <li>
+            <strong>Calidad inconsistente.</strong> Cada referencia entra al inventario con su grado
+            verificado; no mezclamos clases ni sustituimos por “lo que se parece”.
+          </li>
+          <li>
+            <strong>Proveedores fragmentados.</strong> Tornillería, tuercas, arandelas, pernos de rueda
+            y herramienta en un solo proveedor y una sola factura.
+          </li>
+        </ul>
+      </div>
+
+      <div>
+        <img
+          src="/img/marca/rinoceronte.jpeg"
+          alt="Mascota de Trackbolt: un rinoceronte con casco y uniforme de trabajo junto a un tornillo de gran tamaño"
+          width="925"
+          height="1224"
+          loading="lazy"
+          style="border:1px solid var(--borde)"
+        />
+        <p style="font-size:0.78rem;color:var(--gris);margin-top:0.6rem">
+          El rinoceronte: fuerza, blindaje y avance. La misma idea que buscamos en cada pieza que
+          vendemos.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="seccion hueso">
+    <div class="contenedor">
+      <div class="rejilla rejilla-2">
+        <div class="tarjeta" style="background:var(--hueso)">
+          <p class="etiqueta">Misión</p>
+          <p style="font-size:1.05rem;line-height:1.55">{empresa.mision}</p>
+        </div>
+        <div class="tarjeta" style="background:var(--hueso)">
+          <p class="etiqueta">Visión 2030</p>
+          <p style="font-size:1.05rem;line-height:1.55">{empresa.vision}</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="seccion oscuro sobre-oscuro">
+    <div class="contenedor">
+      <div class="cabecera-seccion">
+        <div>
+          <div class="regla"></div>
+          <h2>Nuestros pilares</h2>
+        </div>
+      </div>
+      <dl class="rejilla rejilla-3">
+        {
+          pilares.map((p) => (
+            <div class="tarjeta pilar">
+              <dt>
+                {p.titulo}
+                <small>{p.subtitulo}</small>
+              </dt>
+              <dd>{p.texto}</dd>
+            </div>
+          ))
+        }
+      </dl>
+    </div>
+  </section>
+
+  <section class="seccion">
+    <div class="contenedor">
+      <div class="cabecera-seccion">
+        <div>
+          <div class="regla"></div>
+          <h2>Cómo trabajamos</h2>
+        </div>
+      </div>
+      <div class="rejilla rejilla-4">
+        {
+          diferenciales.map((d) => (
+            <div class="tarjeta">
+              <h3 style="font-size:1rem">{d.titulo}</h3>
+              <p style="font-size:0.88rem;color:var(--gris)">{d.texto}</p>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="franja">
+    <div class="contenedor">
+      <div>
+        <h2>Hablemos de tu operación</h2>
+        <p>
+          Cuéntanos qué máquinas mantienes y qué referencias te frenan. Armamos el stock programado
+          contigo.
+        </p>
+      </div>
+      <a
+        class="btn btn-linea"
+        href={whatsapp('Hola Trackbolt, quiero hablar sobre stock programado para mi operación.')}
+        target="_blank"
+        rel="noopener">Escribir por WhatsApp</a
+      >
+    </div>
+  </section>
+</Base>

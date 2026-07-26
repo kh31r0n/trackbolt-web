@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /interno/
+Disallow: /datos/interno.json
+
+Sitemap: https://trackbolt.co/sitemap-index.xml

@@ -1,0 +1,84 @@
+{
+ "generado_en": "2026-07-26T00:37:58-05:00",
+ "archivo": "inventario total trackbolt 07-25-26.xlsx",
+ "total_referencias": 2790,
+ "umbral_disponible": 10,
+ "multiplicadores": {
+  "mostrador": 2.5,
+  "usuario_final": 2.0,
+  "almacen": 1.75,
+  "mayorista": 1.5
+ },
+ "nivel_publico": "usuario_final",
+ "valor_inventario": 579165097.49,
+ "por_linea": {
+  "rodaje-zapata-cuchilla": 151,
+  "tornillos-hexagonales": 795,
+  "tornillos-flange": 176,
+  "tornillos-bristol": 386,
+  "tuercas": 455,
+  "arandelas": 143,
+  "pernos-rueda": 193,
+  "esparragos-varillas": 42,
+  "tornillos-especiales": 42,
+  "pines-remaches": 15,
+  "herramienta": 392
+ },
+ "por_estado": {
+  "disponible": 1847,
+  "pocas": 943
+ },
+ "incidencias": {
+  "costo_negativo": [
+   {
+    "codigo": "1440",
+    "costo": -1184.41
+   },
+   {
+    "codigo": "3163",
+    "costo": -16047.84
+   },
+   {
+    "codigo": "2354",
+    "costo": -660.64
+   },
+   {
+    "codigo": "3910",
+    "costo": -42167.32
+   }
+  ],
+  "costo_cero": [
+   "2632"
+  ],
+  "referencias_con_pipe_extra": [
+   "10508"
+  ],
+  "sin_medida_reconocida": {
+   "total": 21,
+   "codigos": [
+    "8225",
+    "8222",
+    "10414",
+    "8825",
+    "8826",
+    "8827",
+    "8894",
+    "8895",
+    "10182",
+    "10492",
+    "11627",
+    "11628",
+    "11629",
+    "11630",
+    "6524",
+    "6525",
+    "6526",
+    "6529",
+    "752",
+    "7750",
+    "7655"
+   ]
+  },
+  "sublineas_no_mapeadas": {}
+ }
+}

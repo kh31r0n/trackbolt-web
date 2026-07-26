@@ -1,0 +1,37 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getCollection, render } from 'astro:content';
+
+export async function getStaticPaths() {
+  const entradas = await getCollection('noticias');
+  return entradas.map((entrada) => ({ params: { slug: entrada.id }, props: { entrada } }));
+}
+
+const { entrada } = Astro.props;
+const { Content } = await render(entrada);
+const fecha = entrada.data.fecha.toLocaleDateString('es-CO', {
+  day: '2-digit',
+  month: 'long',
+  year: 'numeric',
+});
+---
+
+<Base titulo={entrada.data.titulo} descripcion={entrada.data.resumen}>
+  <div class="contenedor">
+    <nav class="miga" aria-label="Ruta">
+      <a href="/">Inicio</a>
+      <span aria-hidden="true">/</span>
+      <a href="/noticias/">Noticias</a>
+      <span aria-hidden="true">/</span>
+      <span>{entrada.data.titulo}</span>
+    </nav>
+
+    <article class="prosa" style="padding-block:1rem 4rem">
+      <p class="etiqueta">{fecha}</p>
+      <h1 style="font-size:clamp(1.7rem,4vw,2.5rem);margin-block:0.5rem 1.5rem">
+        {entrada.data.titulo}
+      </h1>
+      <Content />
+    </article>
+  </div>
+</Base>

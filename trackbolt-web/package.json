@@ -1,0 +1,16 @@
+{
+  "name": "trackbolt-web",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "catalogo": "../.venv/bin/python scripts/build_catalogo.py",
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview --host"
+  },
+  "dependencies": {
+    "@astrojs/sitemap": "^3.2.1",
+    "astro": "^5.1.1"
+  }
+}

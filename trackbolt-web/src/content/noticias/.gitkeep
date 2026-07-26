@@ -1,0 +1,12 @@
+Cada archivo .md en esta carpeta se publica como noticia.
+
+Formato:
+
+---
+titulo: Llegó el nuevo lote de tornillo de zapata 13.9
+fecha: 2026-08-01
+resumen: Una frase que aparece en el listado y en las redes.
+borrador: false
+---
+
+Contenido en Markdown.

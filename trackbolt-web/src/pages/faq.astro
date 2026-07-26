@@ -1,0 +1,128 @@
+---
+import Base from '../layouts/Base.astro';
+import { faq, whatsapp } from '../data/sitio';
+---
+
+<Base
+  titulo="Preguntas frecuentes y guía técnica"
+  descripcion="Cómo leer una medida, qué significan las clases 8.8, 10.9 y 12.9, grados SAE, rosca parcial y total, envíos, garantía y formas de pago."
+  jsonld={{
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faq.map((f) => ({
+      '@type': 'Question',
+      name: f.p,
+      acceptedAnswer: { '@type': 'Answer', text: f.r },
+    })),
+  }}
+>
+  <section class="portada sobre-oscuro">
+    <div class="contenedor portada-contenido" style="max-width:52rem">
+      <p class="etiqueta">Guía técnica</p>
+      <h1 style="font-size:clamp(2.1rem,6vw,4rem)">
+        Entender<br /><span class="rojo">lo que pides</span>
+      </h1>
+      <p class="entradilla">
+        Medidas, grados, roscas, envíos y garantía. Si después de esto queda una duda, escríbenos:
+        preferimos explicarlo antes que cambiar una pieza mal pedida.
+      </p>
+    </div>
+  </section>
+
+  <section class="seccion">
+    <div class="contenedor" style="max-width:920px">
+      {
+        faq.map((f, i) => (
+          <details class="acordeon" open={i === 0}>
+            <summary>{f.p}</summary>
+            <p>{f.r}</p>
+          </details>
+        ))
+      }
+      <div style="border-top:1px solid var(--borde)"></div>
+    </div>
+  </section>
+
+  <section class="seccion hueso">
+    <div class="contenedor">
+      <div class="cabecera-seccion">
+        <div>
+          <div class="regla"></div>
+          <h2>Tabla rápida de equivalencias</h2>
+          <p class="entradilla" style="margin-top:0.75rem">
+            Referencia práctica entre el sistema métrico y el sistema en pulgadas.
+          </p>
+        </div>
+      </div>
+      <div class="envoltorio-tabla" style="max-height:none">
+        <table class="tabla-datos">
+          <thead>
+            <tr>
+              <th>Clase métrica</th>
+              <th>Grado SAE equivalente</th>
+              <th>Resistencia a la tracción</th>
+              <th>Uso habitual</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>4.6</td>
+              <td>Grado 2</td>
+              <td class="num">400 MPa</td>
+              <td style="white-space:normal">Fijación general sin carga</td>
+            </tr>
+            <tr>
+              <td>8.8</td>
+              <td>Grado 5</td>
+              <td class="num">800 MPa</td>
+              <td style="white-space:normal">Estructura, chasis, montaje industrial</td>
+            </tr>
+            <tr>
+              <td>10.9</td>
+              <td>Grado 8</td>
+              <td class="num">1.000 MPa</td>
+              <td style="white-space:normal">Maquinaria pesada, ruedas, uniones con carga alta</td>
+            </tr>
+            <tr>
+              <td>12.9</td>
+              <td>—</td>
+              <td class="num">1.200 MPa</td>
+              <td style="white-space:normal">Rodaje, cuchillas, prisioneros Bristol</td>
+            </tr>
+            <tr>
+              <td>13.9</td>
+              <td>—</td>
+              <td class="num">1.300 MPa</td>
+              <td style="white-space:normal">Tornillo de zapata de alta exigencia</td>
+            </tr>
+            <tr>
+              <td>A2 (304)</td>
+              <td>18-8 inoxidable</td>
+              <td class="num">500–700 MPa</td>
+              <td style="white-space:normal">Corrosión, alimentos, exteriores</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="font-size:0.78rem;color:var(--gris);margin-top:0.75rem">
+        Valores nominales de referencia. La equivalencia entre clase métrica y grado SAE es
+        aproximada: no sustituyas una por otra en una unión crítica sin verificar el par de apriete.
+      </p>
+    </div>
+  </section>
+
+  <section class="franja">
+    <div class="contenedor">
+      <div>
+        <h2>¿Sigue la duda?</h2>
+        <p>Mándanos una foto de la pieza con un calibrador o una regla al lado y la identificamos.</p>
+      </div>
+      <a
+        class="btn btn-linea"
+        href={whatsapp('Hola Trackbolt, tengo una duda técnica sobre una referencia.')}
+        target="_blank"
+        rel="noopener">Preguntar por WhatsApp</a
+      >
+    </div>
+  </section>
+</Base>

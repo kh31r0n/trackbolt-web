@@ -1,0 +1,33 @@
+---
+import Base from '../layouts/Base.astro';
+import Catalogo from '../components/Catalogo.astro';
+import reporte from '../../data/generado/reporte.json';
+
+const totalRef = reporte.total_referencias.toLocaleString('es-CO');
+---
+
+<Base
+  titulo="Catálogo completo"
+  descripcion={`Busca entre ${totalRef} referencias de tornillería: filtra por línea, diámetro, largo, grado, material y disponibilidad. Precio al público en pesos colombianos.`}
+>
+  <div class="contenedor">
+    <nav class="miga" aria-label="Ruta">
+      <a href="/">Inicio</a>
+      <span aria-hidden="true">/</span>
+      <span>Catálogo</span>
+    </nav>
+
+    <div style="max-width:60ch;padding-bottom:2rem">
+      <div class="regla"></div>
+      <h1 style="font-size:clamp(1.8rem,4vw,2.6rem)">Catálogo completo</h1>
+      <p class="entradilla" style="margin-top:0.75rem">
+        {totalRef} referencias. Filtra por medida, grado y acabado, o busca directo por código y
+        número de parte del fabricante.
+      </p>
+    </div>
+  </div>
+
+  <div class="contenedor" style="padding-bottom:4rem">
+    <Catalogo />
+  </div>
+</Base>
