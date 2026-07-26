@@ -169,4 +169,65 @@ make build
 ```
 
 Antes de publicar en el dominio real, revisa que `site` en `astro.config.mjs` apunte a
-`https://trackbolt.co` (ya está configurado) para que el sitemap y las canónicas salgan correctas.
+`https://trackbolt.co` (es el valor por omisión) para que el sitemap y las canónicas salgan
+correctas. La variable de entorno `TRACKBOLT_URL` lo sobreescribe.
+
+---
+
+## Demostración en AWS
+
+`infra/` levanta la infraestructura para enseñarle el sitio al cliente sin tocar el dominio de
+producción: un bucket de S3 **privado** como origen y una distribución de CloudFront por delante,
+con HTTPS sobre el dominio `*.cloudfront.net`.
+
+```bash
+make infra-init      # una sola vez, descarga los proveedores
+make infra-plan      # revisa qué se va a crear
+make infra-aplicar   # crea bucket + distribución (~5 min por CloudFront)
+make desplegar       # compila y sube; imprime la URL al terminar
+```
+
+Para bajarlo todo cuando termine la demo: `make infra-destruir`. El bucket lleva `force_destroy`,
+así que no hay que vaciarlo a mano.
+
+### Qué se crea
+
+| Recurso | Papel |
+|---|---|
+| Bucket de S3 | Origen. Acceso público bloqueado; solo lo lee CloudFront. |
+| Origin Access Control | Firma sigv4 las peticiones de CloudFront al bucket. |
+| Política de bucket | Concede `s3:GetObject` únicamente a esta distribución (`AWS:SourceArn`). |
+| CloudFront Function | Traduce `/catalogo/` a `/catalogo/index.html`. Sin esto todo daría 403. |
+| Distribución | HTTPS obligatorio, compresión, cabeceras de seguridad, `404.html` en los errores. |
+
+El estado de Terraform es **local** (`infra/terraform.tfstate`, ignorado por git). Para un solo
+operador y una demo desechable es lo adecuado; si esto pasa a producción, migrar a un backend de S3
+con bloqueo antes de que lo toque un segundo equipo.
+
+### Qué hace `infra/desplegar.sh`
+
+1. Lee bucket, ID de distribución y URL de las salidas de Terraform.
+2. Compila con `TRACKBOLT_DEMO=1` (banner) y `TRACKBOLT_URL` (canónicas y sitemap apuntando a la
+   demo, no a producción).
+3. Sustituye `robots.txt` por un `Disallow: /` — la demo no debe indexarse ni competir con
+   trackbolt.co en los buscadores.
+4. Sube en dos pasadas: `/_astro/` con caché de un año inmutable, el resto con un minuto y
+   revalidación. Cada pasada lleva su `--delete` acotado, así que borra lo que ya no existe.
+5. Invalida la caché de CloudFront.
+
+Opciones: `--catalogo` regenera antes el JSON desde el Excel, `--sin-invalidar` se salta la
+invalidación, `--esperar` bloquea hasta que la invalidación se propague.
+
+### El banner de demo
+
+`TRACKBOLT_DEMO=1` activa `src/components/BannerDemo.astro`: franja superior con cintas de peligro,
+sello fijo abajo a la izquierda y `noindex, nofollow` en todas las páginas. Sin esa variable el
+sitio compila idéntico a producción. Para verlo en local, `make demo`.
+
+### Advertencia sobre `/interno/`
+
+La demo sube el sitio completo, **incluida `/interno/`** con costos, cantidades exactas y los cuatro
+niveles de precio. La URL de CloudFront es pública: cualquiera que la tenga puede llegar a esa
+página. Es una decisión consciente para esta demo — si hiciera falta cerrarla, las opciones son
+excluir `/interno/` y `/datos/interno.json` de la subida, o poner Basic Auth en la
+CloudFront Function.

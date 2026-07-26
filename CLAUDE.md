@@ -25,6 +25,13 @@ make dev             # dev server on :4321
 make build           # static output in dist/ (~2.811 pages, ~7 s)
 make todo            # catalogo + test + build
 make limpiar         # rm -rf dist .astro
+
+make demo            # build with the demo banner on, nothing uploaded
+make infra-init      # terraform init (once)
+make infra-plan      # what would be created in AWS
+make infra-aplicar   # create the S3 bucket + CloudFront distribution (~3 min)
+make desplegar       # build and publish to the demo bucket
+make infra-destruir  # tear the demo infrastructure down
 ```
 
 Single test / subset:
@@ -131,6 +138,26 @@ Adding a product line means editing both `LINEAS` (metadata, ordering, descripti
   from the sitemap (`astro.config.mjs` sitemap `filter`), but **intentionally unprotected** — the
   client chose that for this proof of concept. Don't add auth without asking; don't remove the
   warning banner or the `noindex` either.
+- Two env vars change the build: `TRACKBOLT_URL` overrides `site` (canonicals + sitemap), and
+  `TRACKBOLT_DEMO=1` flips `ES_DEMO` in `src/data/demo.ts`, which mounts `BannerDemo.astro` and
+  forces `noindex` sitewide. Unset, the build is byte-identical to production.
+
+## AWS demo (`trackbolt-web/infra/`)
+
+Private S3 bucket + CloudFront with Origin Access Control, on the default `*.cloudfront.net`
+certificate. Terraform state is **local** and gitignored.
+
+- `funciones/reescribir-rutas.js` is load-bearing: Astro emits directory URLs and the S3 REST
+  origin has no per-folder index document, so without this CloudFront Function every route except
+  `/` returns 403. Its "last segment has no dot ⇒ it's a directory" heuristic is safe only because
+  ERP product codes are numeric.
+- `desplegar.sh` syncs in **two passes** with different `Cache-Control` (`/_astro/` immutable for a
+  year, everything else 60 s). Each pass carries its own `--delete` scoped by the same filters —
+  keep those filters mirrored or one pass will delete the other's files.
+- The script rewrites `dist/robots.txt` to `Disallow: /` after building, because `public/robots.txt`
+  advertises the production sitemap.
+- The demo publishes the **whole** site, `/interno/` included, on a public URL. That was the
+  client's call; see the README section before changing it.
 
 ## Verifying a change
 

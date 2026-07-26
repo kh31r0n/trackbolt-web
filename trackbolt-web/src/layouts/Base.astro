@@ -2,7 +2,9 @@
 import '../styles/global.css';
 import Encabezado from '../components/Encabezado.astro';
 import Pie from '../components/Pie.astro';
+import BannerDemo from '../components/BannerDemo.astro';
 import { empresa } from '../data/sitio';
+import { ES_DEMO } from '../data/demo';
 
 interface Props {
   titulo: string;
@@ -24,7 +26,7 @@ const tituloCompleto = titulo.includes('Trackbolt') ? titulo : `${titulo} | Trac
     <title>{tituloCompleto}</title>
     <meta name="description" content={descripcion} />
     <link rel="canonical" href={canonica} />
-    {noindex && <meta name="robots" content="noindex, nofollow" />}
+    {(noindex || ES_DEMO) && <meta name="robots" content="noindex, nofollow" />}
     <meta name="theme-color" content="#0a0a0a" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
 
@@ -64,6 +66,7 @@ const tituloCompleto = titulo.includes('Trackbolt') ? titulo : `${titulo} | Trac
       class="visualmente-oculto"
       style="position:absolute;top:0;left:0;z-index:100">Saltar al contenido</a
     >
+    {ES_DEMO && <BannerDemo />}
     <Encabezado />
     <main id="contenido">
       <slot />

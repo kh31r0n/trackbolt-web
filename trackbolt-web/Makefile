@@ -1,14 +1,24 @@
 PY = ../.venv/bin/python
 
-.PHONY: ayuda catalogo test dev build preview limpiar todo
+TF = terraform -chdir=infra
+
+.PHONY: ayuda catalogo test dev build preview limpiar todo \
+        infra-init infra-plan infra-aplicar infra-destruir desplegar demo
 
 ayuda:
-	@echo "make catalogo  - regenera el catálogo desde el Excel del ERP"
-	@echo "make test      - ejecuta las pruebas del generador"
-	@echo "make dev       - servidor de desarrollo"
-	@echo "make build     - sitio estático en dist/"
-	@echo "make preview   - sirve dist/ para revisarlo"
-	@echo "make todo      - catalogo + test + build"
+	@echo "make catalogo      - regenera el catálogo desde el Excel del ERP"
+	@echo "make test          - ejecuta las pruebas del generador"
+	@echo "make dev           - servidor de desarrollo"
+	@echo "make build         - sitio estático en dist/"
+	@echo "make preview       - sirve dist/ para revisarlo"
+	@echo "make todo          - catalogo + test + build"
+	@echo ""
+	@echo "make demo          - compila con el banner de demo, sin subir nada"
+	@echo "make infra-init    - inicializa Terraform (una sola vez)"
+	@echo "make infra-plan    - muestra qué se va a crear en AWS"
+	@echo "make infra-aplicar - crea el bucket y la distribución de CloudFront"
+	@echo "make desplegar     - compila y publica en el bucket de la demo"
+	@echo "make infra-destruir- borra toda la infraestructura de la demo"
 
 catalogo:
 	$(PY) scripts/build_catalogo.py
@@ -29,3 +39,23 @@ limpiar:
 	rm -rf dist .astro
 
 todo: catalogo test build
+
+# --- Demostración en AWS --------------------------------------------------
+
+demo:
+	TRACKBOLT_DEMO=1 npm run build
+
+infra-init:
+	$(TF) init
+
+infra-plan:
+	$(TF) plan
+
+infra-aplicar:
+	$(TF) apply
+
+infra-destruir:
+	$(TF) destroy
+
+desplegar:
+	./infra/desplegar.sh

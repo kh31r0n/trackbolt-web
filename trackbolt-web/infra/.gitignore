@@ -1,0 +1,8 @@
+.terraform/
+# .terraform.lock.hcl sí se versiona: fija las versiones de los proveedores.
+terraform.tfstate
+terraform.tfstate.*
+crash.log
+*.tfvars
+!ejemplo.tfvars
+tfplan
