@@ -145,7 +145,16 @@ Adding a product line means editing both `LINEAS` (metadata, ordering, descripti
 ## AWS demo (`trackbolt-web/infra/`)
 
 Private S3 bucket + CloudFront with Origin Access Control, on the default `*.cloudfront.net`
-certificate. Terraform state is **local** and gitignored.
+certificate. Terraform state is **local** and gitignored, in the `default` workspace.
+
+- Everything lives in AWS account **006392690655**, `us-east-1`. The provider pins
+  `allowed_account_ids = [var.cuenta_aws]` and `desplegar.sh` compares `sts get-caller-identity`
+  against the `cuenta` output, so a run with another account's credentials aborts up front. This is
+  deliberate: the bucket name is globally unique, so foreign credentials get a 403 rather than a
+  "not found", CloudFront finds nothing, and Terraform proposes recreating the whole stack in the
+  wrong account. Keep the account id in `variables.tf` — `*.tfvars` is gitignored.
+- `var.entorno` is `demo` or `produccion`. It drives `force_destroy` on the bucket, the
+  `TRACKBOLT_DEMO=1` banner, and whether `desplegar.sh` overwrites `robots.txt` with `Disallow: /`.
 
 - `funciones/reescribir-rutas.js` is load-bearing: Astro emits directory URLs and the S3 REST
   origin has no per-folder index document, so without this CloudFront Function every route except
@@ -157,7 +166,8 @@ certificate. Terraform state is **local** and gitignored.
 - The script rewrites `dist/robots.txt` to `Disallow: /` after building, because `public/robots.txt`
   advertises the production sitemap.
 - The demo publishes the **whole** site, `/interno/` included, on a public URL. That was the
-  client's call; see the README section before changing it.
+  client's call; see the README section before changing it. `publicar_interno = false` is the
+  switch that excludes it from both sync passes — the default stays `true`.
 
 ## Verifying a change
 

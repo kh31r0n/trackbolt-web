@@ -53,13 +53,25 @@ BUCKET="$(salida bucket)"
 DISTRIBUCION="$(salida distribucion_id)"
 URL_SITIO="$(salida url_sitio)"
 REGION="$(salida region)"
+ENTORNO="$(salida entorno)"
+CUENTA_ESPERADA="$(salida cuenta)"
+PUBLICAR_INTERNO="$(salida publicar_interno)"
 
+aviso "entorno:      $ENTORNO"
 aviso "bucket:       $BUCKET ($REGION)"
 aviso "distribución: $DISTRIBUCION"
 aviso "url:          $URL_SITIO"
 
-aws sts get-caller-identity >/dev/null 2>&1 \
+# Terraform se protege con allowed_account_ids, pero aquí se llama a la CLI
+# directamente: sin esta comprobación, unas credenciales de otra cuenta darían
+# un 403 a media subida, o peor, subirían a un bucket homónimo ajeno.
+CUENTA_ACTUAL="$(aws sts get-caller-identity --query Account --output text 2>/dev/null)" \
   || morir "las credenciales de AWS no son válidas. Revisa AWS_PROFILE o ejecuta 'aws configure'."
+
+[[ "$CUENTA_ACTUAL" == "$CUENTA_ESPERADA" ]] \
+  || morir "credenciales de la cuenta $CUENTA_ACTUAL, pero la infraestructura vive en $CUENTA_ESPERADA. Revisa AWS_PROFILE."
+
+aviso "cuenta:       $CUENTA_ACTUAL"
 
 # ---------------------------------------------------------------------------
 # 2. Catálogo (opcional) y compilación
@@ -79,18 +91,25 @@ paso "Compilando el sitio"
 rm -rf "$RAIZ/dist"
 (
   cd "$RAIZ"
-  TRACKBOLT_DEMO=1 TRACKBOLT_URL="$URL_SITIO" npm run build
+  if [[ "$ENTORNO" == "demo" ]]; then
+    TRACKBOLT_DEMO=1 TRACKBOLT_URL="$URL_SITIO" npm run build
+  else
+    TRACKBOLT_URL="$URL_SITIO" npm run build
+  fi
 )
 
 [[ -f "$RAIZ/dist/index.html" ]] || morir "la compilación no produjo dist/index.html."
 
 # La demo no debe indexarse ni competir con trackbolt.co en los buscadores.
 # El robots.txt de public/ anuncia el sitemap de producción, así que se sustituye.
-cat > "$RAIZ/dist/robots.txt" <<ROBOTS
+# En producción se deja el de public/ tal cual.
+if [[ "$ENTORNO" == "demo" ]]; then
+  cat > "$RAIZ/dist/robots.txt" <<ROBOTS
 # Sitio de demostración. No indexar.
 User-agent: *
 Disallow: /
 ROBOTS
+fi
 
 aviso "$(find "$RAIZ/dist" -type f | wc -l) archivos, $(du -sh "$RAIZ/dist" | cut -f1)"
 
@@ -103,11 +122,21 @@ aviso "$(find "$RAIZ/dist" -type f | wc -l) archivos, $(du -sh "$RAIZ/dist" | cu
 
 paso "Subiendo a S3"
 
+# Exclusiones comunes a las dos pasadas. Tienen que ser idénticas: cada --delete
+# está acotado por los filtros de su pasada, así que una exclusión presente solo
+# en una haría que la otra borrase lo que la primera acaba de subir.
+COMUNES=()
+if [[ "$PUBLICAR_INTERNO" != "true" ]]; then
+  aviso "/interno/ excluido del despliegue (publicar_interno = false)"
+  COMUNES+=(--exclude "interno/*" --exclude "datos/interno.json")
+fi
+
 aviso "activos con huella (/_astro/) — caché de un año"
 aws s3 sync "$RAIZ/dist/" "s3://$BUCKET/" \
   --region "$REGION" \
   --delete \
   --only-show-errors \
+  "${COMUNES[@]}" \
   --exclude "*" --include "_astro/*" \
   --cache-control "public, max-age=31536000, immutable"
 
@@ -116,6 +145,7 @@ aws s3 sync "$RAIZ/dist/" "s3://$BUCKET/" \
   --region "$REGION" \
   --delete \
   --only-show-errors \
+  "${COMUNES[@]}" \
   --exclude "_astro/*" \
   --cache-control "public, max-age=60, must-revalidate"
 

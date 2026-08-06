@@ -174,11 +174,12 @@ correctas. La variable de entorno `TRACKBOLT_URL` lo sobreescribe.
 
 ---
 
-## Demostración en AWS
+## Publicación en AWS
 
-`infra/` levanta la infraestructura para enseñarle el sitio al cliente sin tocar el dominio de
-producción: un bucket de S3 **privado** como origen y una distribución de CloudFront por delante,
-con HTTPS sobre el dominio `*.cloudfront.net`.
+`infra/` levanta la infraestructura del sitio: un bucket de S3 **privado** como origen y una
+distribución de CloudFront por delante, con HTTPS sobre el dominio `*.cloudfront.net`. Sirve tanto
+para enseñarle el sitio al cliente sin tocar el dominio de producción como para publicarlo de
+verdad; la diferencia la marca la variable `entorno`.
 
 ```bash
 make infra-init      # una sola vez, descarga los proveedores
@@ -187,32 +188,65 @@ make infra-aplicar   # crea bucket + distribución (~5 min por CloudFront)
 make desplegar       # compila y sube; imprime la URL al terminar
 ```
 
-Para bajarlo todo cuando termine la demo: `make infra-destruir`. El bucket lleva `force_destroy`,
-así que no hay que vaciarlo a mano.
+Para bajarlo todo cuando termine la demo: `make infra-destruir`. En el entorno `demo` el bucket
+lleva `force_destroy`, así que no hay que vaciarlo a mano.
+
+### La cuenta de AWS
+
+Todo vive en la cuenta **006392690655**, en `us-east-1`. El proveedor lleva
+`allowed_account_ids = [var.cuenta_aws]` y `desplegar.sh` contrasta `sts get-caller-identity` con la
+salida `cuenta` de Terraform, así que **ejecutar con las credenciales de otra cuenta aborta antes de
+tocar nada**.
+
+Esa guardia existe por un incidente concreto: el nombre del bucket es único global, de modo que unas
+credenciales ajenas no dan «no existe» sino 403, y CloudFront simplemente no encuentra la
+distribución. El refresco borra los recursos del plan y Terraform propone recrearlo todo —
+duplicando la infraestructura en la cuenta equivocada y dejando huérfana la real. El valor va
+versionado en `variables.tf` a propósito: `*.tfvars` está en `.gitignore` y no sobreviviría a un
+clon nuevo.
+
+### Entornos
+
+`entorno` admite `demo` (predeterminado) y `produccion`:
+
+| | `demo` | `produccion` |
+|---|---|---|
+| `force_destroy` en el bucket | sí | no — un `destroy` accidental falla en vez de borrar |
+| Banner de demo (`TRACKBOLT_DEMO=1`) | sí | no |
+| `robots.txt` | se sustituye por `Disallow: /` | el de `public/`, con el sitemap real |
+
+El estado es local y la demo actual vive en el workspace `default`. Si algún día conviven los dos
+entornos, hay que crear un workspace **para el nuevo** (`terraform workspace new produccion`) y
+dejar el existente donde está: cambiar de workspace con la demo dentro daría un estado vacío y
+dejaría huérfano todo lo creado.
 
 ### Qué se crea
 
 | Recurso | Papel |
 |---|---|
 | Bucket de S3 | Origen. Acceso público bloqueado; solo lo lee CloudFront. |
+| Versionado + ciclo de vida | Permite revertir un despliegue malo; las versiones antiguas caducan a los 30 días y las subidas multiparte incompletas a los 7. |
 | Origin Access Control | Firma sigv4 las peticiones de CloudFront al bucket. |
 | Política de bucket | Concede `s3:GetObject` únicamente a esta distribución (`AWS:SourceArn`). |
 | CloudFront Function | Traduce `/catalogo/` a `/catalogo/index.html`. Sin esto todo daría 403. |
 | Distribución | HTTPS obligatorio, compresión, cabeceras de seguridad, `404.html` en los errores. |
 
 El estado de Terraform es **local** (`infra/terraform.tfstate`, ignorado por git). Para un solo
-operador y una demo desechable es lo adecuado; si esto pasa a producción, migrar a un backend de S3
-con bloqueo antes de que lo toque un segundo equipo.
+operador es lo adecuado; si lo llega a tocar un segundo equipo, migrar a un backend de S3 con
+bloqueo antes.
 
 ### Qué hace `infra/desplegar.sh`
 
-1. Lee bucket, ID de distribución y URL de las salidas de Terraform.
-2. Compila con `TRACKBOLT_DEMO=1` (banner) y `TRACKBOLT_URL` (canónicas y sitemap apuntando a la
-   demo, no a producción).
-3. Sustituye `robots.txt` por un `Disallow: /` — la demo no debe indexarse ni competir con
-   trackbolt.co en los buscadores.
+1. Lee bucket, distribución, URL, entorno y cuenta de las salidas de Terraform, y **comprueba que
+   las credenciales son de esa cuenta** antes de seguir.
+2. Compila con `TRACKBOLT_URL` (canónicas y sitemap apuntando a este sitio) y, en el entorno `demo`,
+   con `TRACKBOLT_DEMO=1` para el banner.
+3. En `demo`, sustituye `robots.txt` por un `Disallow: /` — la demo no debe indexarse ni competir
+   con trackbolt.co en los buscadores.
 4. Sube en dos pasadas: `/_astro/` con caché de un año inmutable, el resto con un minuto y
    revalidación. Cada pasada lleva su `--delete` acotado, así que borra lo que ya no existe.
+   Las exclusiones comunes van en un array compartido: si una pasada excluyera algo que la otra no,
+   borraría lo que la otra acaba de subir.
 5. Invalida la caché de CloudFront.
 
 Opciones: `--catalogo` regenera antes el JSON desde el Excel, `--sin-invalidar` se salta la
@@ -228,6 +262,8 @@ sitio compila idéntico a producción. Para verlo en local, `make demo`.
 
 La demo sube el sitio completo, **incluida `/interno/`** con costos, cantidades exactas y los cuatro
 niveles de precio. La URL de CloudFront es pública: cualquiera que la tenga puede llegar a esa
-página. Es una decisión consciente para esta demo — si hiciera falta cerrarla, las opciones son
-excluir `/interno/` y `/datos/interno.json` de la subida, o poner Basic Auth en la
-CloudFront Function.
+página. Es una decisión consciente para esta demo.
+
+Para cerrarla basta con `publicar_interno = false`: `desplegar.sh` lee esa salida y excluye
+`interno/*` y `datos/interno.json` de las dos pasadas de subida. La alternativa, si hiciera falta
+que la página exista pero protegida, es Basic Auth en la CloudFront Function.

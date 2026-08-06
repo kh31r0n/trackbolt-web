@@ -19,6 +19,9 @@ ayuda:
 	@echo "make infra-aplicar - crea el bucket y la distribución de CloudFront"
 	@echo "make desplegar     - compila y publica en el bucket de la demo"
 	@echo "make infra-destruir- borra toda la infraestructura de la demo"
+	@echo ""
+	@echo "AWS: todo va a la cuenta 006392690655 en us-east-1. Terraform y"
+	@echo "desplegar.sh abortan si las credenciales son de otra cuenta."
 
 catalogo:
 	$(PY) scripts/build_catalogo.py

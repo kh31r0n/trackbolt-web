@@ -2,14 +2,23 @@ locals {
   etiquetas = merge(
     {
       Proyecto = "trackbolt"
-      Entorno  = "demo"
+      Entorno  = var.entorno
       Gestion  = "terraform"
     },
     var.etiquetas_extra,
   )
 
   nombre_bucket = "${var.nombre_proyecto}-${random_id.sufijo.hex}"
+
+  comentario = var.comentario_distribucion != "" ? var.comentario_distribucion : (
+    var.entorno == "demo" ? "Trackbolt — sitio de demostración" : "Trackbolt — sitio de producción"
+  )
 }
+
+# Con qué credenciales se está ejecutando. `allowed_account_ids` ya lo verifica
+# del lado de Terraform; esto lo publica como salida para que `desplegar.sh`,
+# que llama a la CLI directamente, pueda hacer la misma comprobación.
+data "aws_caller_identity" "actual" {}
 
 # El espacio de nombres de S3 es global; el sufijo evita colisiones al recrear.
 resource "random_id" "sufijo" {
@@ -22,8 +31,51 @@ resource "random_id" "sufijo" {
 # ---------------------------------------------------------------------------
 
 resource "aws_s3_bucket" "sitio" {
-  bucket        = local.nombre_bucket
-  force_destroy = true # demo desechable: `terraform destroy` no debe quedarse atascado
+  bucket = local.nombre_bucket
+
+  # Demo desechable: `terraform destroy` no debe quedarse atascado vaciando el
+  # bucket a mano. En producción se quita, para que un destroy accidental falle
+  # en lugar de llevarse el contenido.
+  force_destroy = var.entorno == "demo"
+}
+
+# Un `s3 sync --delete` con un dist/ mal compilado es irreversible sin esto.
+resource "aws_s3_bucket_versioning" "sitio" {
+  bucket = aws_s3_bucket.sitio.id
+
+  versioning_configuration {
+    status = "Enabled"
+  }
+}
+
+resource "aws_s3_bucket_lifecycle_configuration" "sitio" {
+  bucket = aws_s3_bucket.sitio.id
+
+  # Cada despliegue toca ~2.800 archivos; sin caducidad el versionado acumula
+  # coste indefinidamente. Un mes da margen de sobra para revertir.
+  rule {
+    id     = "caducar-versiones-antiguas"
+    status = "Enabled"
+
+    filter {}
+
+    noncurrent_version_expiration {
+      noncurrent_days = 30
+    }
+  }
+
+  rule {
+    id     = "abortar-subidas-incompletas"
+    status = "Enabled"
+
+    filter {}
+
+    abort_incomplete_multipart_upload {
+      days_after_initiation = 7
+    }
+  }
+
+  depends_on = [aws_s3_bucket_versioning.sitio]
 }
 
 resource "aws_s3_bucket_public_access_block" "sitio" {
@@ -120,7 +172,7 @@ data "aws_cloudfront_response_headers_policy" "seguridad" {
 resource "aws_cloudfront_distribution" "sitio" {
   enabled             = true
   is_ipv6_enabled     = true
-  comment             = var.comentario_distribucion
+  comment             = local.comentario
   default_root_object = "index.html"
   price_class         = var.clase_precio
 
