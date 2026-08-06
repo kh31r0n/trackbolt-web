@@ -235,6 +235,44 @@ El estado de Terraform es **local** (`infra/terraform.tfstate`, ignorado por git
 operador es lo adecuado; si lo llega a tocar un segundo equipo, migrar a un backend de S3 con
 bloqueo antes.
 
+### Credenciales para que otro actualice el portal
+
+`crear_usuario_despliegue` (activo por omisión) crea un usuario de IAM,
+`trackbolt-demo-despliegue`, con una clave de acceso y **solo** estos permisos:
+
+| Sobre | Acciones |
+|---|---|
+| El bucket del sitio | `s3:ListBucket` |
+| Su contenido | `s3:GetObject`, `PutObject`, `DeleteObject`, `AbortMultipartUpload` |
+| Esta distribución | `cloudfront:CreateInvalidation`, `GetInvalidation` |
+
+Nada más: no puede listar los buckets de la cuenta, ni borrar este, ni leer o
+modificar la distribución. Las claves se leen con `terraform output -raw clave_despliegue_id` y
+`terraform output -raw clave_despliegue_secreta` (esta última va marcada como sensible, así que no
+aparece en el `apply`).
+
+Quien las reciba **no tendrá el `terraform.tfstate`**, que está en `.gitignore`. Por eso
+`desplegar.sh` acepta los mismos datos por variables de entorno y, si están las siete, no llama a
+Terraform en ningún momento:
+
+```bash
+export AWS_ACCESS_KEY_ID=…  AWS_SECRET_ACCESS_KEY=…
+export TRACKBOLT_BUCKET=trackbolt-demo-8942c2b5 \
+       TRACKBOLT_DISTRIBUCION=E2WRXJVQ13TR1R \
+       TRACKBOLT_URL=https://d30ye8hh8i6gmx.cloudfront.net \
+       TRACKBOLT_REGION=us-east-1 \
+       TRACKBOLT_ENTORNO=demo \
+       TRACKBOLT_CUENTA=006392690655 \
+       TRACKBOLT_PUBLICAR_INTERNO=true
+./infra/desplegar.sh
+```
+
+Para **revocar** el acceso cuando termine: `crear_usuario_despliegue = false` y `make infra-aplicar`.
+Para **rotar** la clave: `terraform -chdir=infra taint aws_iam_access_key.despliegue[0]` y aplicar.
+
+El secreto queda en el `terraform.tfstate` local, que es texto plano. Está en `.gitignore`, pero
+conviene no copiarlo a ningún sitio compartido.
+
 ### Qué hace `infra/desplegar.sh`
 
 1. Lee bucket, distribución, URL, entorno y cuenta de las salidas de Terraform, y **comprueba que

@@ -160,6 +160,11 @@ certificate. Terraform state is **local** and gitignored, in the `default` works
   origin has no per-folder index document, so without this CloudFront Function every route except
   `/` returns 403. Its "last segment has no dot ⇒ it's a directory" heuristic is safe only because
   ERP product codes are numeric.
+- `despliegue-iam.tf` creates an IAM user whose only powers are writing to this bucket and
+  invalidating this distribution — credentials for a third party who updates the site. That party
+  has no `terraform.tfstate`, so `desplegar.sh` reads bucket/distribution/URL from `TRACKBOLT_*`
+  env vars when they're set and only falls back to `terraform output`. Revoke with
+  `crear_usuario_despliegue = false`.
 - `desplegar.sh` syncs in **two passes** with different `Cache-Control` (`/_astro/` immutable for a
   year, everything else 60 s). Each pass carries its own `--delete` scoped by the same filters —
   keep those filters mirrored or one pass will delete the other's files.

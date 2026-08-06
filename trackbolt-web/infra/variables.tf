@@ -87,6 +87,17 @@ variable "comentario_distribucion" {
   default     = ""
 }
 
+variable "crear_usuario_despliegue" {
+  description = <<-DESC
+    Crea un usuario de IAM con clave de acceso que solo puede publicar el sitio:
+    escribir en este bucket e invalidar esta distribución. Ponerlo en false y
+    aplicar revoca el acceso, que es lo que hay que hacer cuando el tercero que
+    lo usaba termine.
+  DESC
+  type        = bool
+  default     = true
+}
+
 variable "etiquetas_extra" {
   description = "Etiquetas adicionales para todos los recursos."
   type        = map(string)

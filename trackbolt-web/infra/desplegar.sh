@@ -34,28 +34,52 @@ paso() { printf '\n\033[1;31m▸\033[0m \033[1m%s\033[0m\n' "$1"; }
 aviso() { printf '  %s\n' "$1"; }
 morir() { printf '\n\033[1;31mError:\033[0m %s\n' "$1" >&2; exit 1; }
 
-for binario in terraform aws npm; do
+for binario in aws npm; do
   command -v "$binario" >/dev/null 2>&1 || morir "falta '$binario' en el PATH."
 done
 
 # ---------------------------------------------------------------------------
-# 1. Salidas de Terraform
+# 1. Dónde se publica
+#
+# Lo normal es leerlo de las salidas de Terraform. Pero quien solo tiene unas
+# credenciales de despliegue no tiene ni terraform ni el terraform.tfstate (que
+# está gitignored), así que cada valor se puede pasar por variable de entorno.
+# Con las siete definidas, el script no necesita Terraform para nada:
+#
+#   TRACKBOLT_BUCKET TRACKBOLT_DISTRIBUCION TRACKBOLT_URL TRACKBOLT_REGION
+#   TRACKBOLT_ENTORNO TRACKBOLT_CUENTA TRACKBOLT_PUBLICAR_INTERNO
 # ---------------------------------------------------------------------------
 
 paso "Leyendo la infraestructura"
 
+hay_terraform=0
+command -v terraform >/dev/null 2>&1 \
+  && [[ -f "$INFRA/terraform.tfstate" ]] \
+  && hay_terraform=1
+
+# salida <nombre-de-la-salida> <VARIABLE_DE_ENTORNO>
 salida() {
-  terraform -chdir="$INFRA" output -raw "$1" 2>/dev/null \
-    || morir "no se pudo leer la salida '$1'. ¿Ejecutaste 'terraform -chdir=infra apply'?"
+  local nombre="$1" variable="$2" valor="${!2:-}"
+
+  if [[ -n "$valor" ]]; then
+    printf '%s' "$valor"
+    return
+  fi
+
+  [[ $hay_terraform -eq 1 ]] \
+    || morir "sin Terraform a mano hay que definir $variable (y las demás TRACKBOLT_*; ver la cabecera del script)."
+
+  terraform -chdir="$INFRA" output -raw "$nombre" 2>/dev/null \
+    || morir "no se pudo leer la salida '$nombre'. ¿Ejecutaste 'terraform -chdir=infra apply'?"
 }
 
-BUCKET="$(salida bucket)"
-DISTRIBUCION="$(salida distribucion_id)"
-URL_SITIO="$(salida url_sitio)"
-REGION="$(salida region)"
-ENTORNO="$(salida entorno)"
-CUENTA_ESPERADA="$(salida cuenta)"
-PUBLICAR_INTERNO="$(salida publicar_interno)"
+BUCKET="$(salida bucket TRACKBOLT_BUCKET)"
+DISTRIBUCION="$(salida distribucion_id TRACKBOLT_DISTRIBUCION)"
+URL_SITIO="$(salida url_sitio TRACKBOLT_URL)"
+REGION="$(salida region TRACKBOLT_REGION)"
+ENTORNO="$(salida entorno TRACKBOLT_ENTORNO)"
+CUENTA_ESPERADA="$(salida cuenta TRACKBOLT_CUENTA)"
+PUBLICAR_INTERNO="$(salida publicar_interno TRACKBOLT_PUBLICAR_INTERNO)"
 
 aviso "entorno:      $ENTORNO"
 aviso "bucket:       $BUCKET ($REGION)"

@@ -18,6 +18,10 @@
 # la exposición actual es una decisión consciente del cliente.
 # publicar_interno = true
 
+# Usuario de IAM que solo puede publicar el sitio. Ponerlo en false revoca las
+# claves entregadas a un tercero.
+# crear_usuario_despliegue = true
+
 # etiquetas_extra = {
 #   Cliente = "trackbolt"
 #   Costo   = "preventa"

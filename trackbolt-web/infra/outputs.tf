@@ -28,6 +28,17 @@ output "entorno" {
   value       = var.entorno
 }
 
+output "clave_despliegue_id" {
+  description = "AWS_ACCESS_KEY_ID del usuario de despliegue."
+  value       = var.crear_usuario_despliegue ? aws_iam_access_key.despliegue[0].id : null
+}
+
+output "clave_despliegue_secreta" {
+  description = "AWS_SECRET_ACCESS_KEY del usuario. Verla con: terraform output -raw clave_despliegue_secreta"
+  value       = var.crear_usuario_despliegue ? aws_iam_access_key.despliegue[0].secret : null
+  sensitive   = true
+}
+
 output "publicar_interno" {
   description = "Si el despliegue debe subir /interno/ al bucket."
   value       = var.publicar_interno
