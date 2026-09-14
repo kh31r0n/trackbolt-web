@@ -16,27 +16,37 @@ const conParte = 63;
 >
   <!-- Portada -->
   <section class="portada sobre-oscuro">
-    <div class="contenedor portada-contenido">
-      <p class="etiqueta">{empresa.anios} años · {empresa.lema}</p>
-      <h1>
-        Fijamos<br />
-        <span class="rojo">lo que mueve</span><br />
-        al mundo
-      </h1>
-      <p class="entradilla">
-        Tornillería de alta resistencia para las máquinas que trabajan al límite. {totalRef}
-        referencias clasificadas por medida, grado y aplicación, con existencias reales y asesoría
-        técnica de verdad.
-      </p>
-      <div class="portada-acciones">
-        <a class="btn btn-rojo" href="/catalogo/">Ver el catálogo completo</a>
-        <a
-          class="btn btn-linea"
-          href={whatsapp('Hola Trackbolt, necesito una referencia de tornillería.')}
-          target="_blank"
-          rel="noopener">Escribir por WhatsApp</a
-        >
+    <div class="contenedor portada-fila">
+      <div class="portada-contenido">
+        <p class="etiqueta">{empresa.anios} años · {empresa.lema}</p>
+        <h1>
+          Fijamos<br />
+          <span class="rojo">lo que mueve</span><br />
+          al mundo
+        </h1>
+        <p class="entradilla">
+          Tornillería de alta resistencia para las máquinas que trabajan al límite. {totalRef}
+          referencias clasificadas por medida, grado y aplicación, con existencias reales y asesoría
+          técnica de verdad.
+        </p>
+        <div class="portada-acciones">
+          <a class="btn btn-rojo" href="/catalogo/">Ver el catálogo completo</a>
+          <a
+            class="btn btn-linea"
+            href={whatsapp('Hola Trackbolt, necesito una referencia de tornillería.')}
+            target="_blank"
+            rel="noopener">Escribir por WhatsApp</a
+          >
+        </div>
       </div>
+      <img
+        class="portada-mascota"
+        src="/img/marca/mascota-home.jpeg"
+        alt="Mascota de Trackbolt: un rinoceronte con casco sujetando un tornillo hexagonal gigante"
+        width="960"
+        height="805"
+        loading="eager"
+      />
     </div>
   </section>
 

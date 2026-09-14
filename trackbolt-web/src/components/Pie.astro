@@ -52,8 +52,15 @@ const destacadas = lineas.filter((l) => l.destacada).slice(0, 6);
               </li>
             ))
           }
-          <li><a href={`mailto:${empresa.email}`}>{empresa.email}</a></li>
+          {
+            empresa.correos.map((c) => (
+              <li>
+                <a href={`mailto:${c.direccion}`}>{c.direccion}</a>
+              </li>
+            ))
+          }
           <li>{empresa.direccion}<br />{empresa.ciudad}</li>
+          <li>{empresa.razonSocial}<br />NIT {empresa.nit}</li>
           {
             empresa.redes.map((r) => (
               <li>

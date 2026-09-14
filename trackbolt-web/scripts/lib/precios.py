@@ -1,4 +1,8 @@
-"""Niveles de precio. El Excel trae el COSTO promedio; aqui se calcula la venta."""
+"""Niveles de precio.
+
+La lista de importación trae el precio mayorista (`PRECIO UNIT`); de él se derivan los otros
+tres niveles. Para las referencias sin precio en la lista, la base es el costo promedio del ERP.
+"""
 
 # Multiplicadores heredados de transform_catalogo.py.
 MULTIPLICADORES = {
@@ -8,9 +12,6 @@ MULTIPLICADORES = {
     "mayorista": 1.5,
 }
 
-# El precio que ve el publico corresponde al nivel usuario final.
-NIVEL_PUBLICO = "usuario_final"
-
 ETIQUETAS = {
     "mostrador": "Mostrador",
     "usuario_final": "Usuario final",
@@ -19,16 +20,22 @@ ETIQUETAS = {
 }
 
 
-def redondear(valor, multiplo=50):
-    """Redondeo comercial: los precios en COP no se publican con centavos."""
+def redondear(valor, multiplo=0):
+    """Con multiplo > 1, redondeo comercial a ese múltiplo de COP; si no, a centavos."""
     if valor is None:
         return None
+    if multiplo is None or multiplo <= 1:
+        return round(valor, 2)
     return int(round(valor / multiplo) * multiplo)
 
 
-def calcular(promedio, multiplo=50):
-    """Devuelve (precio_publico, niveles). Si el costo es <= 0, no hay precio confiable."""
-    if promedio is None or promedio <= 0:
-        return None, {}
-    niveles = {n: redondear(promedio * m, multiplo) for n, m in MULTIPLICADORES.items()}
-    return niveles[NIVEL_PUBLICO], niveles
+def calcular(promedio, multiplo=0, mayorista=None):
+    """Devuelve los niveles. Si hay precio mayorista, la base sale de él; si no, del costo
+    promedio. Sin base positiva no hay precio confiable y se devuelve {}."""
+    if mayorista is not None and mayorista > 0:
+        base = mayorista / MULTIPLICADORES["mayorista"]
+    else:
+        base = promedio
+    if base is None or base <= 0:
+        return {}
+    return {n: redondear(base * m, multiplo) for n, m in MULTIPLICADORES.items()}

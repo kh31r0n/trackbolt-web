@@ -1,6 +1,6 @@
 /**
  * Índices derivados del catálogo, calculados una sola vez por build.
- * Evita rearmar el mapa en cada una de las 2.790 páginas de producto.
+ * Evita rearmar el mapa en cada una de las páginas de producto.
  */
 import productosData from '../../data/generado/productos.json';
 
@@ -31,10 +31,3 @@ export function relacionados(producto: any, cuantos = 8): any[] {
     )
     .slice(0, cuantos);
 }
-
-export const cop = (v: number) =>
-  new Intl.NumberFormat('es-CO', {
-    style: 'currency',
-    currency: 'COP',
-    maximumFractionDigits: 0,
-  }).format(v);

@@ -57,9 +57,11 @@ const valor = new Intl.NumberFormat('es-CO', {
     </dl>
 
     <p style="font-size:0.84rem;color:var(--gris);margin-top:1rem">
-      Multiplicadores sobre el costo promedio: mostrador ×{MULTIPLICADORES.mostrador} · usuario final
-      ×{MULTIPLICADORES.usuario_final} (precio publicado) · almacén ×{MULTIPLICADORES.almacen} ·
-      mayorista ×{MULTIPLICADORES.mayorista}. Redondeo a $50.
+      El precio mayorista es el <span class="mono">PRECIO UNIT</span> de la lista de importación;
+      de él salen los demás niveles (base = mayorista ÷ {MULTIPLICADORES.mayorista}; mostrador
+      ×{MULTIPLICADORES.mostrador} · usuario final ×{MULTIPLICADORES.usuario_final} · almacén
+      ×{MULTIPLICADORES.almacen}). Si la lista no trae precio, la base es el costo promedio del ERP.
+      Sin redondeo. El sitio público no muestra precios.
     </p>
 
     <div style="display:flex;flex-wrap:wrap;gap:0.5rem;margin-top:2rem">
@@ -82,6 +84,7 @@ const valor = new Intl.NumberFormat('es-CO', {
       <table class="tabla-datos">
         <thead>
           <tr>
+            <th><span class="visualmente-oculto">Ficha</span></th>
             <th>Código</th>
             <th>Nombre comercial</th>
             <th>Línea</th>
@@ -113,6 +116,9 @@ const valor = new Intl.NumberFormat('es-CO', {
   const csv = document.getElementById('csv') as HTMLButtonElement;
 
   const num = new Intl.NumberFormat('es-CO', { maximumFractionDigits: 0 });
+  // Los precios conservan centavos (21,15); cantidad, costo y valor van redondeados.
+  const cop = new Intl.NumberFormat('es-CO', { maximumFractionDigits: 2 });
+  const p = (v: number | null) => (v == null ? '—' : cop.format(v));
   let filas: any[] = [];
   let vista: any[] = [];
   let mostradas = 0;
@@ -143,6 +149,7 @@ const valor = new Intl.NumberFormat('es-CO', {
       trozo
         .map(
           (f) => `<tr>
+      <td><a class="btn-mini" href="/producto/${f.c}/" target="_blank" rel="noopener" title="Ver ficha de ${f.c}" aria-label="Ver ficha de ${f.c}">↗</a></td>
       <td class="mono"><a href="/producto/${f.c}/">${f.c}</a></td>
       <td style="white-space:normal;min-width:22rem">${f.n}</td>
       <td>${f.l}</td>
@@ -151,10 +158,10 @@ const valor = new Intl.NumberFormat('es-CO', {
       <td class="num">${m(f.q)}</td>
       <td class="num">${m(f.k)}</td>
       <td class="num">${m(f.v)}</td>
-      <td class="num">${m(f.m)}</td>
-      <td class="num" style="font-weight:700">${m(f.f)}</td>
-      <td class="num">${m(f.a)}</td>
-      <td class="num">${m(f.y)}</td>
+      <td class="num">${p(f.m)}</td>
+      <td class="num">${p(f.f)}</td>
+      <td class="num">${p(f.a)}</td>
+      <td class="num" style="font-weight:700">${p(f.y)}</td>
     </tr>`
         )
         .join('')

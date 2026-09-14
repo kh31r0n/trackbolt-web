@@ -1,7 +1,30 @@
 {
- "generado_en": "2026-07-26T00:37:58-05:00",
+ "generado_en": "2026-09-14T15:21:49-05:00",
  "archivo": "inventario total trackbolt 07-25-26.xlsx",
- "total_referencias": 2790,
+ "archivo_adicionales": "existencias adicionales 09-14-26.xlsx",
+ "archivo_importacion": "inventario importacion 09-02-26.xlsx",
+ "inventario": {
+  "total": 2861,
+  "actualizadas": 1830,
+  "nuevas": 71,
+  "solo_base": 960
+ },
+ "excluidas": {
+  "total": 719,
+  "por_linea": {
+   "MANUAL": 392,
+   "PERNOS": 185,
+   "ESPARRAGOS / VARILLAS": 49,
+   "TORNILLOS CARRIAGE": 35,
+   "TORNILLOS CABEZA CENTRAL": 28,
+   "TORNILLOS ESTUFA": 12,
+   "PINES": 8,
+   "REMACHES": 6,
+   "CHAZOS": 2,
+   "TORNILLOS LAMINA": 2
+  }
+ },
+ "total_referencias": 2142,
  "umbral_disponible": 10,
  "multiplicadores": {
   "mostrador": 2.5,
@@ -9,24 +32,86 @@
   "almacen": 1.75,
   "mayorista": 1.5
  },
- "nivel_publico": "usuario_final",
- "valor_inventario": 579165097.49,
+ "multiplo_redondeo": 0,
+ "valor_inventario": 496256631.98,
  "por_linea": {
-  "rodaje-zapata-cuchilla": 151,
-  "tornillos-hexagonales": 795,
-  "tornillos-flange": 176,
-  "tornillos-bristol": 386,
-  "tuercas": 455,
-  "arandelas": 143,
-  "pernos-rueda": 193,
-  "esparragos-varillas": 42,
-  "tornillos-especiales": 42,
-  "pines-remaches": 15,
-  "herramienta": 392
+  "rodaje-zapata-cuchilla": 117,
+  "tornillos-hexagonales": 827,
+  "tornillos-flange": 178,
+  "tornillos-bristol": 394,
+  "tuercas": 472,
+  "arandelas": 146,
+  "pernos-rueda": 8
  },
  "por_estado": {
-  "disponible": 1847,
-  "pocas": 943
+  "disponible": 1638,
+  "pocas": 502,
+  "pedido": 2
+ },
+ "imagenes": {
+  "archivo": "imagenes.json",
+  "con_imagen": 1505,
+  "sin_imagen": 637,
+  "grupos_sin_imagen": {
+   "tornillos-bristol|Cabeza cilíndrica métrico negro": 177,
+   "tornillos-bristol|Prisionero en pulgadas": 37,
+   "tornillos-bristol|Avellanado métrico negro": 32,
+   "tornillos-bristol|Cabeza cilíndrica en pulgadas": 27,
+   "tornillos-hexagonales|Especiales": 25,
+   "tornillos-bristol|Prisionero métrico": 24,
+   "tuercas|Inoxidable": 22,
+   "tuercas|Tuerca pinar": 19,
+   "arandelas|Mogolla": 16,
+   "arandelas|De presión negra": 15,
+   "arandelas|Arandela zincada": 14,
+   "tornillos-bristol|Avellanado en pulgadas": 14,
+   "arandelas|Especial bicromatada": 13,
+   "arandelas|Arandela INOX": 13,
+   "tornillos-bristol|Botón métrico negro": 13,
+   "tornillos-hexagonales|Inoxidable en pulgadas": 12,
+   "tornillos-bristol|Tornillo bristol botón milimetrico INOX": 12,
+   "arandelas|De sillín": 11,
+   "tornillos-bristol|Tornillo bristol avellanadoado milimetrico INOX": 10,
+   "arandelas|De presión inoxidable": 10,
+   "arandelas|De presión zincada": 10,
+   "tornillos-bristol|Tornillo bristol con cabeza milimetrico INOX": 9,
+   "tornillos-hexagonales|Inoxidable métrico": 8,
+   "tornillos-bristol|Tornillo bristol con cabeza milimetrico zinc": 8,
+   "arandelas|De sello": 7,
+   "arandelas|Cónica": 7,
+   "tornillos-bristol|Tornillo bristol con cabeza INOX": 7,
+   "arandelas|Plana": 7,
+   "tornillos-bristol|Tornillo bristol avellanadoado INOX": 6,
+   "tornillos-bristol|Cabeza avellanada": 5,
+   "tuercas|Tuerca mariposa": 4,
+   "tuercas|Tuerca uña": 4,
+   "tornillos-bristol|Tornillo con cabeza bristol rex": 4,
+   "tornillos-bristol|Tornillo bristol botón INOX": 3,
+   "tornillos-bristol|Tornillo bristol sin cabeza INOX": 3,
+   "tornillos-bristol|Prisionero de cabeza cuadrada": 3,
+   "arandelas|Arandela de neopreno": 2,
+   "arandelas|Arandela f-436": 2,
+   "arandelas|Súper gruesa": 2,
+   "tuercas|Tuerca ciega": 2,
+   "arandelas|Arandela f-438": 1,
+   "arandelas|Arandela f-439": 1,
+   "arandelas|Arandela f-440": 1,
+   "arandelas|Arandela f-441": 1,
+   "arandelas|Arandela f-443": 1,
+   "arandelas|Arandela f-444": 1,
+   "arandelas|Arandela f-445": 1,
+   "arandelas|Arandela f-448": 1,
+   "arandelas|Arandela f-449": 1,
+   "arandelas|Arandela f-453": 1,
+   "arandelas|Arandela f-454": 1,
+   "arandelas|Arandela f-455": 1,
+   "arandelas|Arandela f-456": 1,
+   "arandelas|Arandela f-457": 1,
+   "arandelas|Arandela f-458": 1,
+   "arandelas|Arandela f-442": 1,
+   "arandelas|Arandela f-463": 1,
+   "tornillos-flange|Especiales": 1
+  }
  },
  "incidencias": {
   "costo_negativo": [
@@ -41,44 +126,310 @@
    {
     "codigo": "2354",
     "costo": -660.64
-   },
-   {
-    "codigo": "3910",
-    "costo": -42167.32
    }
   ],
   "costo_cero": [
-   "2632"
+   "3116",
+   "2632",
+   "4444"
+  ],
+  "cantidad_negativa": [
+   {
+    "codigo": "3116",
+    "cantidad": -2.0
+   },
+   {
+    "codigo": "4444",
+    "cantidad": -92.0
+   }
   ],
   "referencias_con_pipe_extra": [
    "10508"
   ],
   "sin_medida_reconocida": {
-   "total": 21,
+   "total": 5,
    "codigos": [
     "8225",
     "8222",
     "10414",
-    "8825",
-    "8826",
-    "8827",
-    "8894",
-    "8895",
-    "10182",
-    "10492",
-    "11627",
-    "11628",
-    "11629",
-    "11630",
-    "6524",
-    "6525",
-    "6526",
-    "6529",
-    "752",
     "7750",
     "7655"
    ]
   },
   "sublineas_no_mapeadas": {}
+ },
+ "fusion": {
+  "actualizados": 370,
+  "sin_cambio": 370,
+  "nuevos": [],
+  "duplicados": {
+   "3092": [
+    {
+     "fila": 557,
+     "descripcion": "TORNILLO HEX MM CL10.9 ROSCA PARCIAL 16 X 2.00 X 220",
+     "cantidad": 44
+    },
+    {
+     "fila": 558,
+     "descripcion": "TORNILLO HEX MM CL10.9 ROSCA PARCIAL 16 X 2.00 X 230",
+     "cantidad": 81
+    }
+   ],
+   "3208": [
+    {
+     "fila": 632,
+     "descripcion": "TORNILLO HEX MM CL10.9 ROSCA PARCIAL 20 X 2.50 X 300",
+     "cantidad": 2
+    },
+    {
+     "fila": 654,
+     "descripcion": "TORNILLO HEX MM CL10.9 ROSCA TOTAL 22 X 2.50 X 40",
+     "cantidad": 85
+    }
+   ],
+   "3331": [
+    {
+     "fila": 634,
+     "descripcion": "TORNILLO HEX MM CL10.9 ROSCA PARCIAL 20 X 2.50 X 60",
+     "cantidad": 22
+    },
+    {
+     "fila": 644,
+     "descripcion": "TORNILLO HEX MM CL10.9 PASO FINO  22 X 1.5 X 60",
+     "cantidad": 22
+    }
+   ],
+   "3332": [
+    {
+     "fila": 635,
+     "descripcion": "TORNILLO HEX MM CL10.9 ROSCA PARCIAL 20 X 2.50 X 70",
+     "cantidad": 7
+    },
+    {
+     "fila": 645,
+     "descripcion": "TORNILLO HEX MM CL10.9 PASO FINO  22 X 1.5 X 70",
+     "cantidad": 7
+    }
+   ],
+   "3333": [
+    {
+     "fila": 636,
+     "descripcion": "TORNILLO HEX MM CL10.9 ROSCA PARCIAL 20 X 2.50 X 80",
+     "cantidad": 2
+    },
+    {
+     "fila": 646,
+     "descripcion": "TORNILLO HEX MM CL10.9 PASO FINO  22 X 1.5 X 80",
+     "cantidad": 2
+    }
+   ],
+   "3334": [
+    {
+     "fila": 637,
+     "descripcion": "TORNILLO HEX MM CL10.9 ROSCA PARCIAL 20 X 2.50 X 90",
+     "cantidad": 49
+    },
+    {
+     "fila": 647,
+     "descripcion": "TORNILLO HEX MM CL10.9 PASO FINO  22 X 1.5 X 90",
+     "cantidad": 49
+    }
+   ],
+   "3335": [
+    {
+     "fila": 638,
+     "descripcion": "TORNILLO HEX MM CL10.9 ROSCA PARCIAL 20 X 2.50 X 100",
+     "cantidad": 15
+    },
+    {
+     "fila": 648,
+     "descripcion": "TORNILLO HEX MM CL10.9 PASO FINO  22 X 1.5 X 100",
+     "cantidad": 15
+    }
+   ],
+   "3336": [
+    {
+     "fila": 639,
+     "descripcion": "TORNILLO HEX MM CL10.9 ROSCA PARCIAL 20 X 2.50 X 110",
+     "cantidad": 9
+    },
+    {
+     "fila": 649,
+     "descripcion": "TORNILLO HEX MM CL10.9 PASO FINO  22 X 1.5 X 110",
+     "cantidad": 9
+    }
+   ],
+   "3337": [
+    {
+     "fila": 640,
+     "descripcion": "TORNILLO HEX MM CL10.9 ROSCA PARCIAL 20 X 2.50 X 120",
+     "cantidad": 1
+    },
+    {
+     "fila": 650,
+     "descripcion": "TORNILLO HEX MM CL10.9 PASO FINO  22 X 1.5 X 120",
+     "cantidad": 1
+    }
+   ],
+   "3341": [
+    {
+     "fila": 641,
+     "descripcion": "TORNILLO HEX MM CL10.9 ROSCA PARCIAL 20 X 2.50 X 180",
+     "cantidad": 2
+    },
+    {
+     "fila": 651,
+     "descripcion": "TORNILLO HEX MM CL10.9 PASO FINO  22 X 1.5 X 180",
+     "cantidad": 2
+    }
+   ],
+   "3342": [
+    {
+     "fila": 642,
+     "descripcion": "TORNILLO HEX MM CL10.9 ROSCA PARCIAL 20 X 2.50 X 200",
+     "cantidad": 4
+    },
+    {
+     "fila": 652,
+     "descripcion": "TORNILLO HEX MM CL10.9 PASO FINO  22 X 1.5 X 200",
+     "cantidad": 4
+    }
+   ],
+   "10912": [
+    {
+     "fila": 676,
+     "descripcion": "TORNILLO HEX MM CL10.9 ROSCA TOTAL 24 X 3.00 X 50",
+     "cantidad": 94
+    },
+    {
+     "fila": 677,
+     "descripcion": "TORNILLO HEX MM CL10.9 ROSCA TOTAL 24 X 3.00 X 55",
+     "cantidad": 50
+    },
+    {
+     "fila": 678,
+     "descripcion": "TORNILLO HEX MM CL10.9 ROSCA TOTAL 24 X 3.00 X 60",
+     "cantidad": 19
+    },
+    {
+     "fila": 679,
+     "descripcion": "TORNILLO HEX MM CL10.9 ROSCA TOTAL 24 X 3.00 X 70",
+     "cantidad": 30
+    },
+    {
+     "fila": 680,
+     "descripcion": "TORNILLO HEX MM CL10.9 ROSCA TOTAL 24 X 3.00 X 80",
+     "cantidad": 97
+    },
+    {
+     "fila": 682,
+     "descripcion": "TORNILLO HEX MM CL10.9 ROSCA PARCIAL 24 X 3.00 X 80",
+     "cantidad": 7
+    }
+   ]
+  },
+  "solo_inventario": 2109,
+  "rex_sin_cobertura": [
+   "2889",
+   "2898",
+   "2902",
+   "2903",
+   "2904",
+   "2905",
+   "2936",
+   "2937",
+   "2942",
+   "2943",
+   "2945",
+   "2948",
+   "2951",
+   "3343",
+   "10590",
+   "10602",
+   "10623",
+   "10625",
+   "10661",
+   "10667",
+   "10673",
+   "10674",
+   "10675",
+   "10676",
+   "10708",
+   "10711",
+   "10725",
+   "10728",
+   "10729",
+   "10753",
+   "10771",
+   "10784",
+   "10791",
+   "10807",
+   "10850",
+   "10851",
+   "10852",
+   "10859",
+   "10883",
+   "10906",
+   "10907",
+   "10908",
+   "10909",
+   "10910",
+   "10911",
+   "10913",
+   "10914",
+   "10971",
+   "10974",
+   "10982",
+   "10986",
+   "10993",
+   "11036",
+   "11282",
+   "11288",
+   "11391",
+   "11392",
+   "11558",
+   "11559",
+   "11565",
+   "11566",
+   "11573"
+  ],
+  "filas_ignoradas": [
+   {
+    "_fila": 476,
+    "contenido": [
+     "2980 TORNILLO HEX MM CL10.9 ROSCA TOTAL  12 X 1.75 X 40",
+     null,
+     null,
+     null
+    ]
+   },
+   {
+    "_fila": 479,
+    "contenido": [
+     null,
+     "358",
+     "701",
+     "250958"
+    ]
+   },
+   {
+    "_fila": 614,
+    "contenido": [
+     null,
+     null,
+     "0",
+     null
+    ]
+   },
+   {
+    "_fila": 948,
+    "contenido": [
+     null,
+     null,
+     null,
+     "556738700.3919502"
+    ]
+   }
+  ]
  }
 }

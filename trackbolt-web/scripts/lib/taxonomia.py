@@ -134,8 +134,37 @@ COLECCIONES = [
 ]
 
 
+# Lineas del ERP que el cliente decidio no publicar, y los tipos que se descartan enteros.
+# El filtro va sobre la clasificacion del ERP, no sobre la linea publica: asi 'PERNOS DE RUEDA
+# REX' y 'TORNILLO CARIAJE REX' se quedan aunque sus equivalentes nacionales salgan.
+LINEAS_EXCLUIDAS = {
+    "CHAZOS",
+    "ESPARRAGOS / VARILLAS",
+    "MANUAL",
+    "PERNOS",
+    "PINES",
+    "REMACHES",
+    "TORNILLOS CABEZA CENTRAL",
+    "TORNILLOS CARRIAGE",
+    "TORNILLOS ESTUFA",
+    "TORNILLOS LAMINA",
+}
+
+TIPOS_EXCLUIDOS = {"HERRAMIENTA"}
+
+
 def _t(texto):
     return (texto or "").strip().upper()
+
+
+def _clave(texto):
+    """Como _t pero sin espacios repetidos: el ERP escribe 'TUERCAS ' y 'ESPARRAGOS  / VARILLAS'."""
+    return " ".join(_t(texto).split())
+
+
+def excluida(tipo, linea):
+    """True si la referencia no debe llegar al catalogo."""
+    return _clave(tipo) in TIPOS_EXCLUIDOS or _clave(linea) in LINEAS_EXCLUIDAS
 
 
 def clasificar(tipo, linea, sublinea, descripcion):

@@ -2,11 +2,12 @@ PY = ../.venv/bin/python
 
 TF = terraform -chdir=infra
 
-.PHONY: ayuda catalogo test dev build preview limpiar todo \
+.PHONY: ayuda catalogo imagenes test dev build preview limpiar todo \
         infra-init infra-plan infra-aplicar infra-destruir desplegar demo
 
 ayuda:
 	@echo "make catalogo      - regenera el catálogo desde el Excel del ERP"
+	@echo "make imagenes      - extrae los dibujos del catálogo PDF del fabricante"
 	@echo "make test          - ejecuta las pruebas del generador"
 	@echo "make dev           - servidor de desarrollo"
 	@echo "make build         - sitio estático en dist/"
@@ -25,6 +26,10 @@ ayuda:
 
 catalogo:
 	$(PY) scripts/build_catalogo.py
+
+# Herramienta de un solo uso: solo hay que repetirla si cambia el catálogo del fabricante.
+imagenes:
+	$(PY) scripts/extraer_imagenes_pdf.py
 
 test:
 	$(PY) -m pytest scripts/tests -q

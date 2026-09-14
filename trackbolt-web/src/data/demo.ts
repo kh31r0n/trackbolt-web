@@ -13,6 +13,6 @@ export const ES_DEMO = entorno.TRACKBOLT_DEMO === '1';
 
 export const demo = {
   etiqueta: 'Página demo',
-  mensaje: 'Versión de demostración de trackbolt.co — datos del inventario del 25/07/2026.',
+  mensaje: 'Versión de demostración de trackbolt.co — inventario del 25/07/2026 con existencias de la importación del 02/09/2026.',
   sello: 'Demo',
 };

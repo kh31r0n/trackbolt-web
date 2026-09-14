@@ -183,3 +183,10 @@ override.tf.json
 terraform.rc
 
 # End of https://www.toptal.com/developers/gitignore/api/astro,node,terraform
+
+# Entorno de Python del generador (el Makefile lo busca en ../.venv)
+.venv/
+.DS_Store
+
+# Archivos de bloqueo que Excel crea mientras un .xlsx esta abierto
+~$*

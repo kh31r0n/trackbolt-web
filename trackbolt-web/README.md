@@ -1,11 +1,12 @@
 # Trackbolt — sitio web y catálogo
 
-Sitio estático en **Astro** cuyo catálogo se genera con un **script de Python** a partir del
-reporte de existencias del ERP. Reemplaza a trackbolt.co.
+Sitio estático en **Astro** cuyo catálogo se genera con un **script de Python** a partir de los
+reportes de existencias del ERP. Reemplaza a trackbolt.co.
 
-- **2.790 referencias**, 11 líneas de producto, una página estática por referencia (2.811 páginas).
-- **Precio al público** visible (costo × 2.0, redondeado a $50 COP).
-- **Disponibilidad sin cantidades** para el cliente; cantidades y costos solo en `/interno/`.
+- **2.142 referencias**, 7 líneas de producto, una página estática por referencia (2.159 páginas).
+- **Sin precios en el sitio público**: el cliente cotiza por WhatsApp o correo.
+- **Disponibilidad sin cantidades** para el cliente; cantidades, costos y los cuatro niveles de
+  precio solo en `/interno/`.
 - Cero dependencias de terceros en el navegador: 4 KB de JavaScript y 15 KB de CSS.
 
 ---
@@ -27,17 +28,42 @@ make dev            # http://localhost:4321
 
 ## Actualizar el catálogo cuando llega un Excel nuevo
 
-1. Copia el reporte de existencias a `data/` (mismo formato de columnas).
-2. Ajusta la constante `EXCEL` en `scripts/build_catalogo.py`, o pásalo por parámetro:
+**El inventario define qué referencias existen.** El generador lee tres archivos de `data/`:
+
+- **Reporte de existencias del ERP** (`inventario total … .xlsx`, columnas `Bodega | Tipo | Linea |
+  Sublinea | Producto | Unidad medida | Cantidad | Total | Promedio`). Es la base y el **único**
+  archivo que trae la línea REX.
+- **Existencias adicionales** (`existencias adicionales … .xlsx`, las mismas columnas más
+  `Ubicacion`). Es una extracción posterior de la tornillería nacional: **manda sobre la base** en
+  las referencias que traen las dos (cantidad y costo más recientes) y agrega las que faltaban.
+  Las columnas se buscan por nombre, así que la columna de más no corre los datos de lugar.
+- **Lista de importación** (`inventario importacion … .xlsx`, columnas `DESCRIPCION DEL PRODUCTO |
+  CANT | PRECIO UNIT | TOTAL`, con títulos de sección y el código pegado a la descripción). **Solo
+  cruza existencias**: aporta la cantidad y `PRECIO UNIT`, que es el **precio mayorista**; de él
+  salen los otros tres niveles (base = mayorista ÷ 1,5). Lo que la lista no menciona conserva la
+  existencia del inventario; un código repetido en la hoja no se aplica. Todo queda en
+  `reporte.json`, clave `fusion`.
+
+Al final se descartan las líneas del ERP que el cliente no publica (`taxonomia.LINEAS_EXCLUIDAS`:
+pernos, espárragos y varillas, carriage, cabeza central, estufa, lámina, pines, remaches, chazos y
+toda la herramienta). El recuento por línea queda en `reporte.json`, clave `excluidas`.
+
+1. Copia el archivo nuevo a `data/` (mismo formato de columnas que el que reemplaza).
+2. Ajusta la constante `EXCEL`, `ADICIONALES` o `IMPORTACION` en `scripts/build_catalogo.py`, o
+   pásalo por parámetro:
 
 ```bash
 make catalogo
 # o bien
-../.venv/bin/python scripts/build_catalogo.py --excel "data/inventario 2026-08.xlsx"
+../.venv/bin/python scripts/build_catalogo.py --excel "data/inventario 2026-10.xlsx" --adicionales ""
 ```
 
-3. Revisa el resumen que imprime el script (incidencias, sublíneas sin clasificar).
+3. Revisa el resumen que imprime el script (referencias combinadas, excluidas, incidencias,
+   sublíneas sin clasificar, resultado de la fusión).
 4. `make build` y publica `dist/`.
+
+Cuando llegue un reporte completo del ERP posterior a estos, pásalo con `--excel` y
+`--adicionales ""`: un solo archivo basta y no hace falta combinar nada.
 
 ```bash
 make todo      # catalogo + pruebas + build
@@ -47,10 +73,13 @@ make todo      # catalogo + pruebas + build
 
 | Parámetro | Def. | Qué hace |
 |---|---|---|
-| `--excel` | `data/inventario total trackbolt 07-25-26.xlsx` | Reporte de existencias de entrada |
+| `--excel` | `data/inventario total trackbolt 07-25-26.xlsx` | Reporte de existencias base |
+| `--adicionales` | `data/existencias adicionales 09-14-26.xlsx` | Reporte posterior que manda sobre la base en lo que traen los dos (`""` = no aplicar) |
+| `--importacion` | `data/inventario importacion 09-02-26.xlsx` | Lista de importación que cruza existencias: cantidad y precio mayorista (`""` = no aplicar) |
+| `--imagenes` | `data/imagenes.json` | Mapeo curado de imágenes de referencia por línea y grupo (`""` = no aplicar) |
 | `--salida` | `data/generado` | Carpeta de los JSON |
 | `--umbral` | `10` | Unidades desde las que se muestra *Disponible* (1–9 = *Pocas unidades*) |
-| `--multiplo` | `50` | Redondeo comercial de los precios en COP |
+| `--multiplo` | `0` | Múltiplo de redondeo comercial en COP; `0` = sin redondeo, se conservan los centavos |
 
 Los multiplicadores de precio están en `scripts/lib/precios.py` y **deben coincidir** con
 `src/data/precios.ts` (solo se usa para el texto informativo de `/interno/`).
@@ -62,20 +91,26 @@ Los multiplicadores de precio están en `scripts/lib/precios.py` y **deben coinc
 ```
 scripts/                    generador del catálogo (Python)
   build_catalogo.py         CLI: Excel -> JSON
-  lib/lector_excel.py       lectura y validación de la cabecera del ERP
+  lib/lector_excel.py       lectura del ERP; resuelve las columnas por nombre
+  lib/inventario.py         combina los dos reportes de existencias
+  lib/lector_importacion.py lectura de la lista de importación
+  lib/fusion.py             cruce de la lista con el inventario
   lib/normalizar.py         limpieza de texto, typos, nombres comerciales
   lib/especificaciones.py   parser de medida, grado, rosca, acabado, número de parte
-  lib/taxonomia.py          tabla ERP -> líneas de producto públicas
+  lib/taxonomia.py          tabla ERP -> líneas públicas y líneas excluidas
   lib/precios.py            niveles de precio y redondeo
-  tests/                    82 pruebas con casos reales del Excel
+  lib/imagenes.py           imagen de referencia por línea y grupo
+  extraer_imagenes_pdf.py   saca los dibujos del catálogo PDF del fabricante (uso puntual)
+  tests/                    137 pruebas con casos reales del Excel
 
 data/
-  inventario ….xlsx         fuente de verdad
+  inventario ….xlsx         fuente de verdad (existencias del ERP + lista de importación)
   generado/                 productos.json · productos-interno.json · lineas.json · reporte.json
+  imagenes.json             mapeo curado grupo -> dibujo (se edita a mano)
   referencia/               material de marca original
 
 public/datos/               índices que descarga el navegador
-  buscador.json             2.790 referencias públicas (46 KB con gzip)
+  buscador.json             2.142 referencias públicas (494 KB sin comprimir)
   interno.json              vista interna con costos y cantidades
 
 src/
@@ -91,15 +126,45 @@ src/
 
 | Archivo | Contiene | Se publica |
 |---|---|---|
-| `data/generado/productos.json` | Catálogo público completo, sin costo ni cantidad | No (solo build) |
+| `data/generado/productos.json` | Catálogo público completo, sin costo, cantidad ni precio | No (solo build) |
 | `data/generado/productos-interno.json` | + costo, cantidad, valor y los 4 niveles | No (solo build) |
 | `data/generado/lineas.json` | Líneas, grupos, facetas y conteos | No (solo build) |
 | `data/generado/reporte.json` | Fecha, totales e incidencias del Excel | No (solo build) |
 | `public/datos/buscador.json` | Índice del buscador | **Sí** |
 | `public/datos/interno.json` | Índice de la vista interna | **Sí** |
 
-El JSON público **no contiene** el costo ni la cantidad: no se puede extraer de las herramientas
-del navegador lo que no está en el archivo.
+El JSON público **no contiene** el costo, la cantidad ni el precio: no se puede extraer de las
+herramientas del navegador lo que no está en el archivo.
+
+---
+
+## Imágenes de producto
+
+Las fichas muestran un dibujo de referencia sacado del catálogo PDF del fabricante
+(`inventario/catalogs/`). Los códigos de ese catálogo son del fabricante y **no coinciden** con los
+del ERP, así que la imagen no se asocia por referencia sino por **tipo de pieza**: la pareja
+línea/grupo de la taxonomía. Un mismo dibujo ilustra todas las referencias de su grupo, y por eso
+la ficha lleva el pie «Imagen de referencia».
+
+```bash
+make imagenes        # extrae los dibujos del PDF a public/img/productos/
+open data/generado/imagenes-fey.html   # hoja de contactos para curar el mapeo
+make catalogo        # vuelca la imagen elegida en productos.json
+```
+
+- `scripts/extraer_imagenes_pdf.py` descarta el cromo de la maqueta (todo lo que se repite entre
+  páginas), las páginas sin número de ítem y lo que no tiene tamaño de dibujo. Deja 209 imágenes,
+  el inventario en `data/generado/imagenes-fey.json` y la hoja de contactos en HTML. Necesita
+  `pymupdf` en el venv.
+- `data/imagenes.json` es el mapeo **curado a mano**: `"linea|grupo" -> ruta`. Un grupo sin entrada
+  se queda sin imagen a propósito: es preferible una ficha sin dibujo a una con el dibujo
+  equivocado. Por eso `por_linea` está vacío — dentro de una línea conviven formas muy distintas
+  (mariposa, uña, ciega) y un respaldo genérico mentiría.
+- Hoy quedan ilustradas 1.505 de 2.142 referencias. Sin cobertura: arandelas y tornillos Bristol
+  (el catálogo del fabricante no los trae). `reporte.json`, clave `imagenes`, lleva la cuenta y la
+  lista de grupos sin mapear.
+- La imagen viaja en `productos.json` y `productos-interno.json`, **no** en `buscador.json`: el
+  índice que descarga el navegador no crece.
 
 ---
 
@@ -114,8 +179,9 @@ pero cualquiera con el enlace ve costos y márgenes. Antes de producción, prot�
 - **Cloudflare Pages**: Cloudflare Access con política por correo.
 
 ### 2. Logotipo
-El monograma del encabezado es una reconstrucción vectorial (`src/components/Logo.astro` y
-`public/favicon.svg`). Reemplázalo por el logotipo original en SVG cuando esté disponible.
+El encabezado usa el logotipo real del cliente (`public/img/marca/logo.jpeg`, referenciado desde
+`src/components/Logo.astro`). Pendiente: el favicon (`public/favicon.svg`) sigue siendo una
+reconstrucción; reemplázalo cuando haya una versión vectorial del logo.
 
 ### 3. Tipografía
 Se usa la pila de fuentes del sistema para no depender de un CDN. Para acercarse al gótico
@@ -123,7 +189,8 @@ condensado de la marca, descarga `Archivo Black` y `Archivo` en woff2 a `public/
 las reglas `@font-face` al inicio de `src/styles/global.css`; la variable `--display` ya está lista.
 
 ### 4. Imágenes
-El sitio funciona sin fotografía (los iconos de línea son SVG). Faltan, en `public/img/`:
+Las fichas de producto ya muestran un **dibujo de referencia** por tipo de pieza (ver «Imágenes de
+producto» más abajo). Siguen faltando, en `public/img/`:
 
 | Ruta | Uso |
 |---|---|
@@ -131,14 +198,28 @@ El sitio funciona sin fotografía (los iconos de línea son SVG). Faltan, en `pu
 | `img/og.jpg` | Imagen 1200×630 para compartir en redes |
 | `img/sectores/*.jpg` | Fotografía por sector |
 
-Ya están integradas `img/marca/rinoceronte.jpeg` (página Nosotros) y
-`img/marca/servicio-cliente.jpeg` (página Contacto).
+Ya están integradas `img/marca/mascota-home.jpeg` (mascota protagonista de la portada del home),
+`img/marca/rinoceronte.jpeg` (página Nosotros) y `img/marca/servicio-cliente.jpeg` (página
+Contacto).
 
-### 5. Datos por confirmar
-- **Horario de atención** y **NIT**: no aparecen en el sitio anterior; falta añadirlos al pie
-  (`src/data/sitio.ts`).
-- **21 referencias** sin medida reconocida y **5** con costo inválido: ver
-  `data/generado/reporte.json`, sección `incidencias`. Conviene corregirlas en el ERP.
+### 5. Derechos de las imágenes de producto
+Los dibujos salen del catálogo PDF del fabricante (`inventario/catalogs/`). Se publican por decisión
+explícita del proyecto, pero **conviene que el cliente confirme con el proveedor el derecho de uso
+antes de producción**. Para quitarlos del sitio sin tocar código, basta con vaciar
+`data/imagenes.json` (o generar con `--imagenes ""`): las fichas vuelven a renderizarse sin figura.
+
+### 6. Datos por confirmar
+- **Horario de atención**: el sitio anterior solo dice «Horario de oficina», sin días ni franjas.
+  Falta pedírselo al cliente y añadirlo a `src/data/sitio.ts`. Mientras falte, el JSON-LD no puede
+  pasar de `Organization` a `LocalBusiness` (necesita `openingHoursSpecification`).
+- **62 referencias REX** que la lista de importación no menciona: conservan la cantidad de julio.
+  Ver `reporte.json`, clave `fusion.rex_sin_cobertura`.
+- **12 códigos repetidos** en la lista de importación con descripciones distintas: no se aplican y
+  conservan la cantidad del inventario (`reporte.json`, clave `fusion.duplicados`).
+- **719 referencias excluidas** del catálogo por línea (`reporte.json`, clave `excluidas`): 392 de
+  herramienta, 185 pernos, 49 espárragos y varillas, 35 carriage, 28 cabeza central, 12 estufa,
+  8 pines, 6 remaches, 2 chazos y 2 de lámina. Para que alguna vuelva, quítala de
+  `taxonomia.LINEAS_EXCLUIDAS`.
 
 ---
 
@@ -146,8 +227,9 @@ Ya están integradas `img/marca/rinoceronte.jpeg` (página Nosotros) y
 
 El generador las reporta en cada ejecución y las deja en `reporte.json`:
 
-- **4 referencias con costo promedio negativo** y **1 en cero** → se publican como
-  «Precio a confirmar».
+- **3 referencias con costo promedio negativo** y **3 en cero**: se publican sin niveles de precio
+  en `/interno/`, salvo que la lista de importación les fije el mayorista.
+- **2 referencias con existencia negativa**, que el sitio muestra como «Bajo pedido».
 - **1 descripción con un `|` extra**, que rompería un `split("|")` ingenuo.
 - Errores de escritura consistentes: `TORNILOS BRISTOL`, `TUERCAS ` con espacio final,
   `MERCEDEZ`, `HIUNDAY`, `JHON DEER`, `TUERGA`, medidas con `1"""`.

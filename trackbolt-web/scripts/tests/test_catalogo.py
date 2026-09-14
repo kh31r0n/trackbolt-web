@@ -5,10 +5,12 @@
 import sys
 from pathlib import Path
 
+import openpyxl
 import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
+import build_catalogo
 from lib import especificaciones as E
 from lib import lector_excel, normalizar, precios, taxonomia
 
@@ -25,6 +27,42 @@ def test_partir_producto_con_pipe_extra():
     assert codigo == "100"
     assert linea == "TUERCAS"
     assert desc == "TUERCA A | B ESPECIAL"
+
+
+def _excel(tmp_path, filas, nombre="reporte.xlsx"):
+    wb = openpyxl.Workbook()
+    for fila in filas:
+        wb.active.append(fila)
+    ruta = tmp_path / nombre
+    wb.save(ruta)
+    return ruta
+
+
+FILA_ERP = ["Principal", "TORNILLERIA", "ARANDELAS", "Arandela especial bicro",
+            "8125 | ARANDELAS | ARAN PLANA ESPECIAL 5/16 / 8MM", "UN", 3854, 140794.31, 36.53]
+
+
+def test_lee_las_columnas_por_nombre(tmp_path):
+    """'EXISTENCIAS PRODUCTOS ADICIONALES' intercala 'Ubicacion' antes de 'Producto'."""
+    sin = _excel(tmp_path, [
+        ["Bodega", "Tipo", "Linea", "Sublinea", "Producto", "Unidad medida", "Cantidad", "Total", "Promedio"],
+        FILA_ERP,
+    ], "sin.xlsx")
+    con = _excel(tmp_path, [
+        ["Bodega", "Tipo", "Linea", "Sublinea", "Ubicacion", "Producto", "Unidad medida", "Cantidad", "Total", "Promedio"],
+        FILA_ERP[:4] + [None] + FILA_ERP[4:],
+    ], "con.xlsx")
+    assert lector_excel.leer(sin) == lector_excel.leer(con)
+    assert lector_excel.leer(con)[0]["cantidad"] == 3854
+
+
+def test_falla_si_falta_una_columna(tmp_path):
+    ruta = _excel(tmp_path, [
+        ["Bodega", "Tipo", "Linea", "Sublinea", "Producto", "Unidad medida", "Cantidad", "Total"],
+        FILA_ERP[:8],
+    ])
+    with pytest.raises(lector_excel.FormatoInesperado, match="Promedio"):
+        lector_excel.leer(ruta)
 
 
 # --- Fracciones en pulgadas --------------------------------------------------
@@ -149,6 +187,10 @@ def test_cabeza_y_rosca():
     assert esp["rosca_largo"] == "Parcial"
     esp = E.extraer("TORNILLO HEX MM CL10.9 RI 10 X 1.50 X 40")
     assert esp["rosca_largo"] == "Total"
+    esp = E.extraer("TORNILLO HEX MM CL10.9 ROSCA PARCIAL 18 X 2.50 X 65")   # lista de importación
+    assert esp["rosca_largo"] == "Parcial"
+    assert esp["medida"] == "M18 × 65 mm"
+    assert esp["paso"] == "2.5 mm"
     esp = E.extraer("TOR BRISTOL SIN CAB UNC G8 3/16 X 1/2")
     assert esp["cabeza"] == "Sin cabeza (prisionero)"
     assert esp["rosca_serie"] == "UNC (ordinaria)"
@@ -231,19 +273,84 @@ def test_toda_linea_tiene_metadatos():
         assert slug in taxonomia.LINEAS_POR_SLUG
 
 
+# --- Lineas que no se publican -----------------------------------------------
+
+@pytest.mark.parametrize("tipo,linea", [
+    ("TORNILLERIA", "PERNOS"),
+    ("TORNILLERIA", "ESPARRAGOS / VARILLAS"),
+    ("TORNILLERIA", "ESPARRAGOS  / VARILLAS"),     # el ERP repite espacios
+    ("TORNILLERIA", "TORNILLOS CARRIAGE"),
+    ("TORNILLERIA", "TORNILLOS CABEZA CENTRAL"),
+    ("TORNILLERIA", "TORNILLOS ESTUFA "),
+    ("TORNILLERIA", "TORNILLOS LAMINA"),
+    ("TORNILLERIA", "PINES"),
+    ("TORNILLERIA", "REMACHES"),
+    ("TORNILLERIA", "CHAZOS"),
+    ("HERRAMIENTA", "MANUAL"),
+    ("HERRAMIENTA", "ELECTRICA"),                  # cualquier herramienta futura
+])
+def test_linea_excluida(tipo, linea):
+    assert taxonomia.excluida(tipo, linea) is True
+
+
+@pytest.mark.parametrize("tipo,linea", [
+    ("TORNILLOS REX", "PERNOS DE RUEDA REX"),      # los de rueda importados se quedan
+    ("TORNILLOS REX", "TORNILLO CARIAJE REX"),
+    ("TORNILLERIA", "TORNILLOS CABEZA HEXAGONAL"),
+    ("TORNILLERIA", "TUERCAS "),
+    ("TORNILLERIA", "WASAS"),
+    ("TORNILLERIA", "ARANDELAS"),
+])
+def test_linea_publicada(tipo, linea):
+    assert taxonomia.excluida(tipo, linea) is False
+
+
 # --- Precios -----------------------------------------------------------------
 
-def test_precios_redondean_a_50():
-    publico, niveles = precios.calcular(1018.66)
-    assert publico == 2050                      # 1018.66 x 2.0 = 2037.32 -> 2050
+def test_precios_sin_redondeo_por_defecto():
+    """11562 ARANDELA PLANA 6MM: costo 14,1; a $50 el mayorista (21,15) quedaba en 0."""
+    niveles = precios.calcular(14.1)
+    assert niveles == {"mostrador": 35.25, "usuario_final": 28.2, "almacen": 24.68, "mayorista": 21.15}
+
+
+def test_precios_redondean_a_50_si_se_pide():
+    niveles = precios.calcular(1018.66, multiplo=50)
+    assert niveles["usuario_final"] == 2050     # 1018.66 x 2.0 = 2037.32 -> 2050
     assert niveles["mayorista"] == 1550
     assert niveles["mostrador"] == 2550
 
 
+def test_mayorista_de_la_lista_deriva_los_niveles():
+    """11494 TORNILLO AVELLAN BRISTOL: costo ERP 193,64 pero la lista fija el mayorista en $352."""
+    niveles = precios.calcular(193.64, mayorista=352)
+    assert niveles == {"mostrador": 586.67, "usuario_final": 469.33, "almacen": 410.67, "mayorista": 352}
+    # Códigos nuevos: sin costo en el ERP, pero con precio en la lista.
+    assert precios.calcular(0, mayorista=352)["mayorista"] == 352
+    # Sin precio en la lista se vuelve al costo del ERP.
+    assert precios.calcular(14.1, mayorista=None)["mayorista"] == 21.15
+
+
 def test_costo_no_valido_no_genera_precio():
     """4 referencias del Excel traen costo negativo y 1 en cero."""
-    assert precios.calcular(-42167.32) == (None, {})
-    assert precios.calcular(0) == (None, {})
+    assert precios.calcular(-42167.32) == {}
+    assert precios.calcular(0) == {}
+    assert precios.calcular(0, mayorista=0) == {}
+
+
+# --- Reparto público / interno -----------------------------------------------
+
+def test_lo_publico_no_lleva_costo_cantidad_ni_precio():
+    """Lo que baja el navegador (productos.json, buscador.json) no puede filtrar costos ni precios."""
+    fila = {
+        "_fila": 2, "bodega": "Principal", "tipo": "TORNILLOS REX", "linea": "ARANDELAS REX",
+        "sublinea": "ARANDELA PLANA REX", "producto": "11562 | ARANDELAS REX | ARANDELA PLANA 6MM REX",
+        "unidad": "UN", "cantidad": 970, "total": 13677, "promedio": 14.1, "precio_mayorista": 21.15,
+    }
+    publicos, internos, _ = build_catalogo.construir([fila], umbral=10, multiplo=0)
+    assert not {"costo", "cantidad", "valor_inventario", "precios", "precio"} & set(publicos[0])
+    assert "p" not in build_catalogo.construir_buscador(publicos)[0]
+    assert internos[0]["costo"] == 14.1 and internos[0]["cantidad"] == 970
+    assert internos[0]["precios"] == {"mostrador": 35.25, "usuario_final": 28.2, "almacen": 24.68, "mayorista": 21.15}
 
 
 def test_moneda_cop():

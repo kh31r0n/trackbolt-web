@@ -1,10 +1,15 @@
 #!/usr/bin/env python3
-"""Genera el catalogo de Trackbolt a partir del reporte de existencias del ERP.
+"""Genera el catalogo de Trackbolt a partir de los reportes de existencias del ERP.
 
     python scripts/build_catalogo.py
 
+El inventario define qué referencias existen: el reporte base (--excel) y, si se pasa, el reporte
+adicional (--adicionales), que manda sobre el base en lo que traen los dos. La lista de
+importación (--importacion) solo cruza existencias: aporta cantidad y precio mayorista. Al final
+se descartan las líneas que el cliente no publica (taxonomia.LINEAS_EXCLUIDAS).
+
 Salidas en data/generado/:
-    productos.json          publico  (sin costo ni cantidad; lo usa el build de Astro)
+    productos.json          publico  (sin costo, cantidad ni precio; lo usa el build de Astro)
     productos-interno.json  interno  (costo, cantidad, valor y los 4 niveles de precio)
     lineas.json             arbol de lineas, grupos, facetas y conteos
     buscador.json           indice compacto que se descarga en el navegador
@@ -19,10 +24,14 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from lib import especificaciones as esp_mod
-from lib import lector_excel, normalizar, precios, salidas, taxonomia
+from lib import (fusion, imagenes, inventario, lector_excel, lector_importacion, normalizar,
+                 precios, salidas, taxonomia)
 
 RAIZ = Path(__file__).resolve().parent.parent
 EXCEL = RAIZ / "data" / "inventario total trackbolt 07-25-26.xlsx"
+ADICIONALES = RAIZ / "data" / "existencias adicionales 09-14-26.xlsx"
+IMPORTACION = RAIZ / "data" / "inventario importacion 09-02-26.xlsx"
+IMAGENES = RAIZ / "data" / "imagenes.json"
 DESTINO = RAIZ / "data" / "generado"
 
 ESTADOS = {
@@ -38,11 +47,12 @@ def estado_de(cantidad, umbral):
     return 2 if cantidad >= umbral else 1
 
 
-def construir(filas, umbral, multiplo):
+def construir(filas, umbral, multiplo, mapa_imagenes=None):
     publicos, internos = [], []
     incidencias = {
-        "costo_negativo": [], "costo_cero": [], "sin_medida": [],
+        "costo_negativo": [], "costo_cero": [], "cantidad_negativa": [], "sin_medida": [],
         "sublineas_no_mapeadas": Counter(), "pipes_extra": [],
+        "grupos_sin_imagen": Counter(),
     }
 
     for fila in filas:
@@ -79,14 +89,21 @@ def construir(filas, umbral, multiplo):
             if not especs.get("medida"):
                 incidencias["sin_medida"].append(codigo)
 
-        precio_publico, niveles = precios.calcular(costo, multiplo)
+        niveles = precios.calcular(costo, multiplo, fila.get("precio_mayorista"))
         if costo < 0:
             incidencias["costo_negativo"].append({"codigo": codigo, "costo": costo})
         elif costo == 0:
             incidencias["costo_cero"].append(codigo)
 
+        if cantidad < 0:
+            incidencias["cantidad_negativa"].append({"codigo": codigo, "cantidad": cantidad})
+
         nivel = estado_de(cantidad, umbral)
         es_rex = "REX" in linea_erp.upper() or "REX" in sublinea_erp.upper()
+
+        imagen = imagenes.para(mapa_imagenes, linea_slug, grupo)
+        if not imagen:
+            incidencias["grupos_sin_imagen"][imagenes.clave(linea_slug, grupo)] += 1
 
         comun = {
             "codigo": codigo,
@@ -100,6 +117,7 @@ def construir(filas, umbral, multiplo):
             "es_rex": es_rex,
             "numero_parte": especs["numero_parte"],
             "referencia_fabricante": especs["referencia_fabricante"],
+            "imagen": imagen,
             "especificaciones": {
                 "sistema": especs["sistema"],
                 "medida": especs["medida"],
@@ -119,7 +137,6 @@ def construir(filas, umbral, multiplo):
 
         publicos.append({
             **comun,
-            "precio": precio_publico,
             "estado": nivel,
             "estado_texto": ESTADOS[nivel]["texto"],
             "estado_clave": ESTADOS[nivel]["clave"],
@@ -206,7 +223,6 @@ def construir_buscador(publicos):
             "n": p["nombre"],
             "l": p["linea"],
             "g": p["grupo"],
-            "p": p["precio"],
             "e": p["estado"],
             "s": e["sistema"] or "",
             "d": e["diametro"] or "",
@@ -246,12 +262,22 @@ def construir_interno_web(internos):
 
 def main():
     ap = argparse.ArgumentParser(description="Genera el catalogo de Trackbolt desde el Excel del ERP.")
-    ap.add_argument("--excel", default=str(EXCEL), help="ruta del reporte de existencias")
+    ap.add_argument("--excel", default=str(EXCEL), help="ruta del reporte de existencias base")
+    ap.add_argument("--adicionales", default=str(ADICIONALES),
+                    help="reporte de existencias posterior; manda sobre el base en las referencias"
+                         " que traen los dos (vacío = no aplicar)")
+    ap.add_argument("--importacion", default=str(IMPORTACION),
+                    help="lista de importación que cruza existencias: aporta cantidad y precio"
+                         " mayorista (vacío = no aplicar)")
+    ap.add_argument("--imagenes", default=str(IMAGENES),
+                    help="mapeo curado de imágenes de referencia por línea y grupo"
+                         " (vacío = no aplicar)")
     ap.add_argument("--salida", default=str(DESTINO), help="carpeta de salida de los JSON")
     ap.add_argument("--umbral", type=int, default=10,
                     help="unidades desde las que un producto se muestra como Disponible (def. 10)")
-    ap.add_argument("--multiplo", type=int, default=50,
-                    help="multiplo de redondeo de precios en COP (def. 50)")
+    ap.add_argument("--multiplo", type=int, default=0,
+                    help="múltiplo de redondeo comercial de precios en COP; 0 = sin redondeo, "
+                         "se conservan los centavos (def. 0)")
     args = ap.parse_args()
 
     ruta_excel = Path(args.excel)
@@ -262,7 +288,51 @@ def main():
     filas = lector_excel.leer(ruta_excel)
     print(f"  {len(filas)} filas leídas")
 
-    publicos, internos, incidencias = construir(filas, args.umbral, args.multiplo)
+    resumen_inventario = None
+    ruta_adicionales = Path(args.adicionales) if args.adicionales else None
+    if ruta_adicionales:
+        if not ruta_adicionales.exists():
+            sys.exit(f"No existe el archivo: {ruta_adicionales}")
+        print(f"Leyendo {ruta_adicionales.name} ...")
+        adicionales = lector_excel.leer(ruta_adicionales)
+        filas, resumen_inventario = inventario.combinar(filas, adicionales)
+        print(f"  {len(adicionales)} filas leídas: {resumen_inventario['actualizadas']} referencias"
+              f" actualizadas, {resumen_inventario['nuevas']} nuevas"
+              f" ({resumen_inventario['total']} en el inventario combinado)")
+
+    resumen_fusion = None
+    ruta_importacion = Path(args.importacion) if args.importacion else None
+    if ruta_importacion:
+        if not ruta_importacion.exists():
+            sys.exit(f"No existe el archivo: {ruta_importacion}")
+        print(f"Leyendo {ruta_importacion.name} ...")
+        items, ignoradas = lector_importacion.leer(ruta_importacion)
+        filas, resumen_fusion = fusion.fusionar(filas, items)
+        resumen_fusion["filas_ignoradas"] = ignoradas
+        print(f"  {len(items)} ítems: {resumen_fusion['actualizados']} cantidades actualizadas,"
+              f" {resumen_fusion['sin_cambio']} sin cambio, {len(resumen_fusion['nuevos'])} códigos nuevos,"
+              f" {len(resumen_fusion['duplicados'])} repetidos no aplicados,"
+              f" {len(ignoradas)} filas ignoradas")
+
+    # El filtro va al final: así un código de la lista no puede reentrar por la rama de códigos
+    # nuevos de fusionar().
+    excluidas = Counter()
+    conservadas = []
+    for fila in filas:
+        if taxonomia.excluida(fila["tipo"], fila["linea"]):
+            excluidas[normalizar.limpiar(fila["linea"]) or "(sin línea)"] += 1
+        else:
+            conservadas.append(fila)
+    filas = conservadas
+    if excluidas:
+        print(f"\n{sum(excluidas.values())} referencias excluidas por línea: "
+              + " · ".join(f"{n} {l}" for l, n in excluidas.most_common()))
+
+    mapa_imagenes = imagenes.cargar(args.imagenes)
+    if args.imagenes and not mapa_imagenes["por_grupo"] and not mapa_imagenes["por_linea"]:
+        print(f"\nSin mapeo de imágenes: {args.imagenes}")
+
+    publicos, internos, incidencias = construir(filas, args.umbral, args.multiplo, mapa_imagenes)
     lineas = construir_lineas(publicos)
     buscador = construir_buscador(publicos)
 
@@ -270,17 +340,28 @@ def main():
     reporte = {
         "generado_en": datetime.now(timezone.utc).astimezone().isoformat(timespec="seconds"),
         "archivo": ruta_excel.name,
+        "archivo_adicionales": ruta_adicionales.name if ruta_adicionales else None,
+        "archivo_importacion": ruta_importacion.name if ruta_importacion else None,
+        "inventario": resumen_inventario,
+        "excluidas": {"total": sum(excluidas.values()), "por_linea": dict(excluidas.most_common())},
         "total_referencias": len(publicos),
         "umbral_disponible": args.umbral,
         "multiplicadores": precios.MULTIPLICADORES,
-        "nivel_publico": precios.NIVEL_PUBLICO,
+        "multiplo_redondeo": args.multiplo,
         "valor_inventario": round(valor_total, 2),
         "por_linea": {l["slug"]: l["total"] for l in lineas},
         "por_estado": {ESTADOS[k]["clave"]: v for k, v in
                        sorted(Counter(p["estado"] for p in publicos).items(), reverse=True)},
+        "imagenes": {
+            "archivo": Path(args.imagenes).name if args.imagenes else None,
+            "con_imagen": sum(1 for p in publicos if p["imagen"]),
+            "sin_imagen": sum(1 for p in publicos if not p["imagen"]),
+            "grupos_sin_imagen": dict(incidencias["grupos_sin_imagen"].most_common()),
+        },
         "incidencias": {
             "costo_negativo": incidencias["costo_negativo"],
             "costo_cero": incidencias["costo_cero"],
+            "cantidad_negativa": incidencias["cantidad_negativa"],
             "referencias_con_pipe_extra": incidencias["pipes_extra"],
             "sin_medida_reconocida": {
                 "total": len(incidencias["sin_medida"]),
@@ -288,6 +369,7 @@ def main():
             },
             "sublineas_no_mapeadas": dict(incidencias["sublineas_no_mapeadas"]),
         },
+        "fusion": resumen_fusion,
     }
 
     destino = Path(args.salida)
@@ -309,11 +391,17 @@ def main():
         f"{v} {k}" for k, v in reporte["por_estado"].items()))
     print(f"Valor de inventario: {normalizar.moneda_cop(valor_total)} COP")
 
+    img = reporte["imagenes"]
+    print(f"\nImágenes de referencia: {img['con_imagen']} referencias con imagen,"
+          f" {img['sin_imagen']} sin imagen"
+          f" ({len(img['grupos_sin_imagen'])} grupos sin mapear en {img['archivo']})")
+
     sin_medida = reporte["incidencias"]["sin_medida_reconocida"]["total"]
     no_tornilleria = sum(1 for p in publicos if p["linea"] == "herramienta")
     print(f"\nIncidencias del Excel (ver reporte.json):")
     print(f"  costo negativo: {len(incidencias['costo_negativo'])}"
           f" | costo en cero: {len(incidencias['costo_cero'])}"
+          f" | cantidad negativa: {len(incidencias['cantidad_negativa'])}"
           f" | descripción con '|' extra: {len(incidencias['pipes_extra'])}")
     print(f"  sin medida reconocida: {sin_medida} de {len(publicos) - no_tornilleria} referencias de tornillería")
     if incidencias["sublineas_no_mapeadas"]:

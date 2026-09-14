@@ -2,7 +2,7 @@
 import Base from '../../layouts/Base.astro';
 import lineas from '../../../data/generado/lineas.json';
 import { empresa, whatsapp } from '../../data/sitio';
-import { productos, relacionados as buscarRelacionados, cop } from '../../data/indice';
+import { productos, relacionados as buscarRelacionados } from '../../data/indice';
 
 export function getStaticPaths() {
   return productos.map((p) => ({ params: { codigo: p.codigo }, props: { producto: p } }));
@@ -40,8 +40,6 @@ const mensaje =
   (producto.numero_parte ? ` (parte ${producto.numero_parte})` : '') +
   '. ¿Me confirman disponibilidad y precio por cantidad?';
 
-const disponibilidad =
-  producto.estado === 0 ? 'https://schema.org/PreOrder' : 'https://schema.org/InStock';
 ---
 
 <Base
@@ -58,15 +56,6 @@ const disponibilidad =
     category: linea?.nombre,
     brand: { '@type': 'Brand', name: producto.es_rex ? 'REX' : 'Trackbolt' },
     description: `${producto.nombre}. ${producto.descripcion_erp}`,
-    offers: producto.precio
-      ? {
-          '@type': 'Offer',
-          price: producto.precio,
-          priceCurrency: 'COP',
-          availability: disponibilidad,
-          seller: { '@type': 'Organization', name: 'Trackbolt' },
-        }
-      : undefined,
   }}
 >
   <div class="contenedor">
@@ -80,26 +69,37 @@ const disponibilidad =
       <span class="mono">{producto.codigo}</span>
     </nav>
 
-    <div class="ficha">
+    <header class="ficha-encabezado">
+      <p class="etiqueta">
+        {producto.grupo}
+        {producto.es_rex && <span class="sello-rex" style="margin-left:0.5rem">REX</span>}
+      </p>
+      <h1>{producto.nombre}</h1>
+
+      <p style="font-size:0.9rem;color:var(--gris)">
+        Referencia <strong class="mono" style="color:var(--tinta)">{producto.codigo}</strong>
+        {
+          producto.numero_parte && (
+            <>
+              {' '}· número de parte{' '}
+              <strong class="mono" style="color:var(--tinta)">{producto.numero_parte}</strong>
+            </>
+          )
+        }
+      </p>
+    </header>
+
+    <div class={producto.imagen ? 'ficha' : 'ficha ficha-sin-imagen'}>
+      {
+        producto.imagen && (
+          <figure class="figura-producto">
+            <img src={producto.imagen} alt={producto.nombre} width="180" height="180" loading="lazy" />
+            <figcaption>Imagen de referencia: ilustra el tipo de pieza, no la medida exacta.</figcaption>
+          </figure>
+        )
+      }
+
       <div>
-        <p class="etiqueta">
-          {producto.grupo}
-          {producto.es_rex && <span class="sello-rex" style="margin-left:0.5rem">REX</span>}
-        </p>
-        <h1>{producto.nombre}</h1>
-
-        <p style="font-size:0.9rem;color:var(--gris)">
-          Referencia <strong class="mono" style="color:var(--tinta)">{producto.codigo}</strong>
-          {
-            producto.numero_parte && (
-              <>
-                {' '}· número de parte{' '}
-                <strong class="mono" style="color:var(--tinta)">{producto.numero_parte}</strong>
-              </>
-            )
-          }
-        </p>
-
         <table class="tabla-especificaciones">
           <caption class="visualmente-oculto">Especificaciones técnicas</caption>
           <tbody>
@@ -126,24 +126,8 @@ const disponibilidad =
       </div>
 
       <aside class="panel-compra">
-        {
-          producto.precio ? (
-            <>
-              <p style="font-size:0.74rem;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:var(--gris)">
-                Precio al público
-              </p>
-              <p class="precio-grande">{cop(producto.precio)}</p>
-              <p class="nota">Por {producto.unidad === 'RO' ? 'rollo' : 'unidad'}, IVA no incluido. Precios diferenciales por volumen.</p>
-            </>
-          ) : (
-            <>
-              <p class="precio-grande" style="font-size:1.4rem">Precio a confirmar</p>
-              <p class="nota">Esta referencia requiere confirmación de precio. Escríbenos y te respondemos el mismo día.</p>
-            </>
-          )
-        }
-
-        <p style="margin-top:1rem">
+        <h2 class="panel-compra-titulo">Cotiza esta referencia</h2>
+        <p>
           <span class={`estado estado-${producto.estado_clave}`}>{producto.estado_texto}</span>
           <span style="display:block;font-size:0.8rem;color:var(--gris);margin-top:0.25rem">
             {producto.estado_detalle}
@@ -151,9 +135,9 @@ const disponibilidad =
         </p>
 
         <a class="btn btn-rojo" href={whatsapp(mensaje)} target="_blank" rel="noopener">
-          Cotizar esta referencia
+          Cotizar por WhatsApp
         </a>
-        <a class="btn btn-linea" href={`mailto:${empresa.email}?subject=${encodeURIComponent(`Cotización ref. ${producto.codigo}`)}&body=${encodeURIComponent(mensaje)}`}>
+        <a class="btn btn-linea" href={`mailto:${empresa.correos[0].direccion}?subject=${encodeURIComponent(`Cotización ref. ${producto.codigo}`)}&body=${encodeURIComponent(mensaje)}`}>
           Cotizar por correo
         </a>
 
@@ -186,9 +170,6 @@ const disponibilidad =
                   <span class="nombre" style="display:block">{p.nombre}</span>
                 </span>
                 <span class="derecha">
-                  <span class="precio">
-                    {p.precio ? cop(p.precio) : 'A confirmar'}
-                  </span>
                   <span class={`estado estado-${p.estado_clave}`}>{p.estado_texto}</span>
                 </span>
               </a>
