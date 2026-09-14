@@ -16,8 +16,9 @@ script** and its output; don't edit them — `trackbolt-web/scripts/` replaced t
 
 ## Commands
 
-Run from `trackbolt-web/`. The Python venv lives one level up at `/home/jjimenez/trackbolt/.venv`
-(the Makefile refers to it as `../.venv`).
+Run from `trackbolt-web/`. The Python venv lives one level up, at the repo root: the Makefile
+calls it `../.venv` and every command below assumes that path. Create it with
+`python3 -m venv .venv && .venv/bin/pip install -r trackbolt-web/scripts/requirements.txt`.
 
 ```bash
 make catalogo        # Excel -> JSON. Run this before build whenever the spreadsheet changes.
@@ -48,6 +49,9 @@ Generator with parameters (defaults in the CLI's `--help`):
 ```bash
 ../.venv/bin/python scripts/build_catalogo.py --excel "data/otro.xlsx" --adicionales "" --importacion "" --umbral 10 --multiplo 0
 ```
+
+`--imagenes ""` builds the catalog with no drawings at all — the switch to pull them from the site
+without touching code, should the supplier's permission not come through.
 
 `astro preview` does not serve `.xml` (returns the 404 page). To check the sitemap, serve `dist/`
 with any plain static server instead.
@@ -119,8 +123,10 @@ illustrated; arandelas and Bristol have no coverage because the supplier doesn't
 | `data/generado/productos-interno.json` | + `costo`, `cantidad`, `valor_inventario`, 4 price tiers | no (build-time only) |
 | `data/generado/lineas.json` | Lines, groups, facet values with counts | no (build-time only) |
 | `data/generado/reporte.json` | Timestamp, totals, merge summaries, exclusions, data incidents | no (build-time only) |
-| `public/datos/buscador.json` | Search/filter index | **yes** |
+| `public/datos/buscador.json` | Search/filter index — note `imagen` is deliberately absent | **yes** |
 | `public/datos/interno.json` | Internal view index | **yes** |
+| `data/generado/imagenes-fey.json` + `.html` | Drawing inventory and contact sheet, for curating `data/imagenes.json` by hand | no (one-off tool) |
+| `public/img/productos/*.jpeg` | The 209 extracted drawings | **yes**, only the ones a product references |
 
 **Invariant: `productos.json` and `buscador.json` must never carry `costo`, `cantidad` or any
 price.** The customer-facing decision is "availability status, no numbers, no prices — quote by
@@ -180,8 +186,13 @@ them.
   rather than rebuilding the whole map in each product frontmatter.
 - The public site shows **no prices anywhere** (cards, product page, JSON-LD, sort options, FAQ).
   Don't reintroduce a price field in `comun`/`buscador.json` — that's the client's decision.
-- `src/data/sitio.ts` is the single place for company data and page copy (phones, address,
-  mission, FAQ). Prefer editing it over hardcoding text in templates.
+- `src/data/sitio.ts` is the single place for company data and page copy (phones, emails,
+  address, NIT, mission, FAQ). Prefer editing it over hardcoding text in templates. `telefonos`
+  and `correos` are **ordered lists** and index 0 is the primary: `whatsapp()` defaults to
+  `indice = 0`, so reordering `telefonos` redirects all ten WhatsApp CTAs at once, and the two
+  links that only take one address (the product page's `mailto:` with a pre-filled subject, and
+  the JSON-LD) read `correos[0]`. The phone is also written as prose inside one FAQ answer and in
+  `contacto.astro`'s meta description — grep before changing a number, those two don't interpolate.
 - Price multipliers are duplicated in `scripts/lib/precios.py` and `src/data/precios.ts` (the TS
   copy only feeds the informational line on `/interno/`). **Keep them in sync.**
 - The product page renders `producto.imagen` as a `figure.figura-producto` with a «Imagen de
@@ -193,6 +204,31 @@ them.
 - Two env vars change the build: `TRACKBOLT_URL` overrides `site` (canonicals + sitemap), and
   `TRACKBOLT_DEMO=1` flips `ES_DEMO` in `src/data/demo.ts`, which mounts `BannerDemo.astro` and
   forces `noindex` sitewide. Unset, the build is byte-identical to production.
+
+## Design system (`src/styles/global.css`)
+
+One stylesheet, no framework, tokens in Spanish on `:root`. Four things there are load-bearing and
+should not be nudged casually:
+
+- **The red is the client's logo, measured.** Sampling `public/img/marca/logo.jpeg` (eroding 6 px
+  off the edges first, so JPEG ringing doesn't pollute the reading) gives `#F30D10` in the
+  wordmark, `#EE0405` in the monogram, `#ED0B0E` weighted across both. `--rojo: #ed0c0f` is that
+  average, and it is also the minimum darkening of the pure red that clears **4.5:1 on white** —
+  which matters because `--rojo` serves both white-on-red fills (`.btn-rojo`, `.franja`) and small
+  red text on white (`.etiqueta`, `.prosa a`, `.tarjeta-linea .conteo`), and those share one
+  threshold. The pure `#F30D10` survives as `--rojo-vivo`, used **only** inside `.sobre-oscuro`,
+  where the threshold flips and it reaches 4.88:1. Don't collapse the two into one value.
+- **`--negro` is pure `#000000` on purpose.** Both brand JPEGs (`logo.jpeg`, `mascota-home.jpeg`)
+  carry a `#000000` background and no transparency; anything lighter draws a visible rectangle
+  around them. For the same reason `.portada::after`'s red wash is disabled under 860px: stacked,
+  it lands behind the centred mascot and cuts its black background out against the tint.
+- **`--alto-encabezado` exists to stop a footgun.** Four rules depend on the header's height and
+  must move together — `.encabezado-fila` `min-height`, `.menu-movil .panel` `top`, and the sticky
+  offsets of `.filtros` (+16px) and `.panel-compra` (+20px). They all read the token, so the
+  phone-sized override is one line. Never hardcode a pixel height into any of them again.
+- The hero's columns are swapped with `flex-direction: row-reverse` on `.portada-fila`, not by
+  reordering `index.astro` — the `<h1>` stays first in the DOM. The `@media (max-width: 860px)`
+  rule's existing `column-reverse` then stacks image-above-text, which is the matching order.
 
 ## AWS demo (`trackbolt-web/infra/`)
 
@@ -239,11 +275,21 @@ neither pytest nor the Astro build will.
 
 ## Known gaps
 
-Tracked in `trackbolt-web/README.md` § "Pendientes conocidos": original vector logo (the header
-monogram is a reconstruction), webfonts (system stack is in use; `--display` is ready), photography
-for line/sector/OG images, and the missing opening hours (trackbolt.co only says «Horario de
-oficina», with no days or times). `reporte.json` lists the data to fix upstream: 3 negative average
-costs, 3 at zero, 2 negative stock quantities, 5 references whose
-measurement can't be parsed, 12 codes repeated in the import sheet (not applied), and the 62 REX
-references the import list doesn't mention, which therefore still carry July quantities
+Tracked in `trackbolt-web/README.md` § "Pendientes conocidos":
+
+- **Vector logo.** The header now uses the client's real file (`public/img/marca/logo.jpeg`), but
+  it is a raster with a baked-in black background — hence `--negro: #000000`. `public/favicon.svg`
+  is still a reconstruction. Both want the original vector.
+- **Rights to the product drawings.** They come from the supplier's PDF catalog and are published
+  on the project's own decision; the client should confirm permission before production. Pulling
+  them is `--imagenes ""` or an empty `data/imagenes.json` — no code change.
+- **Webfonts** (system stack is in use; `--display` is ready) and **photography** for line, sector
+  and OG images.
+- **Opening hours.** trackbolt.co only says «Horario de oficina», with no days or times, so
+  `sitio.ts` has none and the JSON-LD can't move from `Organization` to `LocalBusiness`.
+
+`reporte.json` lists the data to fix upstream: 3 negative average costs, 3 at zero, 2 negative
+stock quantities, 5 references whose measurement can't be parsed, 12 codes repeated in the import
+sheet (not applied), 58 taxonomy groups with no drawing mapped, and the 62 REX references the
+import list doesn't mention, which therefore still carry July quantities
 (`fusion.rex_sin_cobertura`).

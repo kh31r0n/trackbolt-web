@@ -7,7 +7,11 @@ reportes de existencias del ERP. Reemplaza a trackbolt.co.
 - **Sin precios en el sitio público**: el cliente cotiza por WhatsApp o correo.
 - **Disponibilidad sin cantidades** para el cliente; cantidades, costos y los cuatro niveles de
   precio solo en `/interno/`.
+- **1.505 referencias con dibujo de referencia**, sacado del catálogo PDF del fabricante y
+  asociado por tipo de pieza, no por código.
 - Cero dependencias de terceros en el navegador: 4 KB de JavaScript y 15 KB de CSS.
+- Paleta tomada del logotipo real del cliente: `--rojo` (`#ed0c0f`) es el promedio medido sobre
+  `public/img/marca/logo.jpeg` y el mínimo que alcanza 4,5:1 sobre blanco.
 
 ---
 
@@ -190,7 +194,7 @@ las reglas `@font-face` al inicio de `src/styles/global.css`; la variable `--dis
 
 ### 4. Imágenes
 Las fichas de producto ya muestran un **dibujo de referencia** por tipo de pieza (ver «Imágenes de
-producto» más abajo). Siguen faltando, en `public/img/`:
+producto» más arriba). Siguen faltando, en `public/img/`:
 
 | Ruta | Uso |
 |---|---|
