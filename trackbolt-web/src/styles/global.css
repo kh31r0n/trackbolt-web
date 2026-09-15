@@ -5,10 +5,10 @@
 
 :root {
   /* Marca */
-  --rojo: #e01f26;
-  --rojo-vivo: #ff3b41;
-  --rojo-oscuro: #a8151b;
-  --negro: #0a0a0a;
+  --rojo: #ed0c0f;
+  --rojo-vivo: #f30d10;
+  --rojo-oscuro: #b9090b;
+  --negro: #000000;
   --carbon: #141619;
   --grafito: #1e2126;
   --borde-oscuro: #2c3138;
@@ -32,6 +32,7 @@
   --mono: ui-monospace, 'SF Mono', 'Cascadia Mono', Menlo, Consolas, monospace;
 
   /* Ritmo */
+  --alto-encabezado: 96px;
   --ancho: 1240px;
   --ancho-texto: 68ch;
   --radio: 3px;
@@ -156,7 +157,7 @@ h3 {
   width: 100%;
   max-width: var(--ancho);
   margin-inline: auto;
-  padding-inline: clamp(1rem, 4vw, 2.5rem);
+  padding-inline: clamp(1.5rem, 5vw, 4rem);
 }
 
 .seccion {
@@ -263,36 +264,19 @@ h3 {
   display: flex;
   align-items: center;
   gap: 1.5rem;
-  min-height: 68px;
+  min-height: var(--alto-encabezado);
 }
 
 .marca {
   display: flex;
   align-items: center;
-  gap: 0.6rem;
   flex-shrink: 0;
 }
 
-.marca-texto {
-  font-family: var(--display);
-  font-size: 1.32rem;
-  letter-spacing: -0.01em;
-  text-transform: uppercase;
-  color: #fff;
-  line-height: 1;
-}
-/* Solo la sílaba 'bolt' va en rojo, no la bajada que también es un span. */
-.marca-texto span:not(.marca-bajada) {
-  color: var(--rojo);
-}
-.marca-bajada {
+.marca img {
+  height: 56px;
+  width: auto;
   display: block;
-  font-family: var(--texto);
-  font-size: 0.5rem;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  color: var(--gris-claro);
-  margin-top: 3px;
 }
 
 .nav {
@@ -338,11 +322,11 @@ h3 {
   display: none;
   position: absolute;
   inset-inline: 0;
-  top: 68px;
+  top: var(--alto-encabezado);
   flex-direction: column;
   background: var(--carbon);
   border-bottom: 1px solid var(--borde-oscuro);
-  padding: 0.5rem 1rem 1.25rem;
+  padding: 0.5rem 1.5rem 1.25rem;
 }
 .menu-movil .panel a {
   padding: 0.8rem 0.25rem;
@@ -360,6 +344,15 @@ h3 {
   }
 }
 
+@media (max-width: 640px) {
+  :root {
+    --alto-encabezado: 72px;
+  }
+  .marca img {
+    height: 44px;
+  }
+}
+
 /* --- Portada -------------------------------------------------------------- */
 
 .portada {
@@ -374,16 +367,52 @@ h3 {
   content: '';
   position: absolute;
   inset: 0;
-  background-image: linear-gradient(115deg, transparent 62%, rgba(224, 31, 38, 0.11) 62.2%, transparent 75%),
-    radial-gradient(circle at 88% 12%, rgba(224, 31, 38, 0.18), transparent 45%);
+  background-image: linear-gradient(115deg, transparent 62%, rgba(243, 13, 16, 0.11) 62.2%, transparent 75%),
+    radial-gradient(circle at 88% 12%, rgba(243, 13, 16, 0.18), transparent 45%);
   pointer-events: none;
 }
 
-.portada-contenido {
+.portada-fila {
   position: relative;
   z-index: 1;
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: center;
+  gap: clamp(1.5rem, 4vw, 3.5rem);
   padding-block: clamp(3.5rem, 9vw, 7rem);
-  max-width: 56rem;
+}
+
+.portada-contenido {
+  flex: 1 1 32rem;
+  max-width: 40rem;
+}
+
+.portada-mascota {
+  flex: 0 1 22rem;
+  width: clamp(220px, 30vw, 22rem);
+  height: auto;
+  border-radius: 8px;
+}
+
+@media (max-width: 860px) {
+  /* Apilada, la mascota queda centrada justo donde cae el lavado rojo y su fondo
+     negro se recorta contra el. Sin lavado, el JPEG funde con la portada. */
+  .portada::after {
+    display: none;
+  }
+  .portada-fila {
+    flex-direction: column-reverse;
+    text-align: center;
+  }
+  .portada-contenido {
+    max-width: none;
+  }
+  .portada-mascota {
+    width: min(70vw, 18rem);
+  }
+  .portada-acciones {
+    justify-content: center;
+  }
 }
 
 .portada h1 {
@@ -538,7 +567,7 @@ h3 {
 
 .filtros {
   position: sticky;
-  top: 84px;
+  top: calc(var(--alto-encabezado) + 16px);
   max-height: calc(100vh - 104px);
   overflow-y: auto;
   padding-right: 0.5rem;
@@ -723,20 +752,6 @@ h3 {
   align-items: flex-end;
   gap: 0.3rem;
 }
-.producto .precio {
-  font-family: var(--display);
-  font-size: 1.1rem;
-  white-space: nowrap;
-}
-.producto .unidad {
-  font-family: var(--texto);
-  font-weight: 600;
-  font-size: 0.68rem;
-  color: var(--gris);
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-}
-
 @media (max-width: 560px) {
   .producto {
     grid-template-columns: 1fr;
@@ -816,20 +831,61 @@ h3 {
   color: var(--borde);
 }
 
+/* Dibujo de referencia de la ficha: ilustra el tipo de pieza, no la medida exacta. */
+.figura-producto {
+  margin: 0;
+  padding: 0.75rem;
+  background: #fff;
+  max-width: 180px;
+}
+.figura-producto img {
+  /* Los dibujos vienen en tamaños distintos: la caja es fija y la pieza se centra dentro. */
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1 / 1;
+  object-fit: contain;
+  mix-blend-mode: multiply;
+}
+.figura-producto figcaption {
+  margin-top: 0.6rem;
+  font-size: 0.72rem;
+  line-height: 1.4;
+  color: var(--gris);
+}
+
+/* Tres columnas: dibujo · especificaciones · tarjeta de cotización. El encabezado va aparte, a
+   todo el ancho, para que el nombre del producto no quede estrujado en una columna. */
 .ficha {
   display: grid;
-  grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
-  gap: clamp(2rem, 5vw, 4rem);
+  grid-template-columns: 180px minmax(0, 1fr) minmax(0, 24rem);
+  gap: clamp(1.5rem, 4vw, 3rem);
   align-items: start;
   padding-bottom: clamp(2.5rem, 5vw, 4rem);
 }
-@media (max-width: 860px) {
+/* Sin dibujo mapeado la ficha no deja el hueco: pasa a dos columnas. */
+.ficha-sin-imagen {
+  grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+}
+@media (max-width: 1080px) {
+  /* La tarjeta pasa a ocupar el ancho completo debajo del dibujo y las especificaciones. */
   .ficha {
+    grid-template-columns: 180px minmax(0, 1fr);
+  }
+  .ficha .panel-compra {
+    grid-column: 1 / -1;
+  }
+}
+@media (max-width: 860px) {
+  .ficha,
+  .ficha-sin-imagen {
     grid-template-columns: 1fr;
   }
 }
 
-.ficha h1 {
+.ficha-encabezado {
+  padding-block: 0 1.75rem;
+}
+.ficha-encabezado h1 {
   font-size: clamp(1.5rem, 3.4vw, 2.2rem);
   letter-spacing: -0.02em;
   margin-block: 0.5rem 1rem;
@@ -838,7 +894,6 @@ h3 {
 .tabla-especificaciones {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 1.5rem;
 }
 .tabla-especificaciones th,
 .tabla-especificaciones td {
@@ -862,22 +917,17 @@ h3 {
   border: 1px solid var(--borde);
   padding: clamp(1.25rem, 3vw, 1.75rem);
   position: sticky;
-  top: 88px;
+  top: calc(var(--alto-encabezado) + 20px);
 }
 @media (max-width: 860px) {
   .panel-compra {
     position: static;
   }
 }
-.panel-compra .precio-grande {
-  font-family: var(--display);
-  font-size: clamp(1.9rem, 4vw, 2.5rem);
-  line-height: 1;
-}
-.panel-compra .nota {
-  font-size: 0.78rem;
-  color: var(--gris);
-  margin-top: 0.4rem;
+.panel-compra-titulo {
+  font-size: 1.05rem;
+  letter-spacing: -0.01em;
+  margin: 0 0 1rem;
 }
 .panel-compra .btn {
   width: 100%;
@@ -1055,6 +1105,25 @@ a.visualmente-oculto:focus {
 }
 .mono {
   font-family: var(--mono);
+}
+
+/* Acceso rápido a la ficha desde cada fila del listado interno. */
+.btn-mini {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border: 1px solid var(--borde);
+  color: var(--gris);
+  font-size: 0.8rem;
+  line-height: 1;
+  text-decoration: none;
+}
+.btn-mini:hover {
+  border-color: var(--rojo);
+  background: var(--rojo);
+  color: #fff;
 }
 
 .tabla-datos {

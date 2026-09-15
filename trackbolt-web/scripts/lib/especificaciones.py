@@ -350,7 +350,7 @@ def _rosca(d):
     elif re.search(r"PASO\s*FINO|ROSCA\s*FINA", d):
         serie = "Paso fino"
     largo = None
-    if re.search(r"\bRP\b", d):
+    if re.search(r"\bRP\b|ROSCA\s*PARCIAL", d):
         largo = "Parcial"
     elif re.search(r"\bR[IT]\b|ROSCA\s*TOTAL", d):
         largo = "Total"

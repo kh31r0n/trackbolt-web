@@ -144,8 +144,6 @@ const etiquetaSistema: Record<string, string> = { metrico: 'Métrico (mm)', pulg
       <select id="orden">
         <option value="medida">Ordenar: por medida</option>
         <option value="nombre">Ordenar: A – Z</option>
-        <option value="precio-asc">Ordenar: precio menor primero</option>
-        <option value="precio-desc">Ordenar: precio mayor primero</option>
       </select>
     </div>
 
@@ -181,12 +179,6 @@ const etiquetaSistema: Record<string, string> = { metrico: 'Métrico (mm)', pulg
     { clave: 'pocas', texto: 'Pocas unidades' },
     { clave: 'disponible', texto: 'Disponible' },
   ];
-  const cop = new Intl.NumberFormat('es-CO', {
-    style: 'currency',
-    currency: 'COP',
-    maximumFractionDigits: 0,
-  });
-
   let productos: any[] = [];
   let filtrados: any[] = [];
   let mostrados = 0;
@@ -247,8 +239,6 @@ const etiquetaSistema: Record<string, string> = { metrico: 'Métrico (mm)', pulg
     const modo = orden.value;
     filtrados.sort((a, b) => {
       if (modo === 'nombre') return a.n.localeCompare(b.n, 'es');
-      if (modo === 'precio-asc') return (a.p ?? Infinity) - (b.p ?? Infinity);
-      if (modo === 'precio-desc') return (b.p ?? -1) - (a.p ?? -1);
       return a.g.localeCompare(b.g, 'es') || a.x - b.x || a.y - b.y || a.n.localeCompare(b.n, 'es');
     });
   }
@@ -262,9 +252,6 @@ const etiquetaSistema: Record<string, string> = { metrico: 'Métrico (mm)', pulg
           .filter(Boolean)
           .map((a) => `<span>${a}</span>`)
           .join('');
-        const precio = p.p
-          ? cop.format(p.p)
-          : '<span style="font-size:0.9rem">Precio a confirmar</span>';
         return `<a class="producto" href="/producto/${p.c}/">
           <span>
             <span class="codigo">Ref. ${p.c}</span>
@@ -273,7 +260,6 @@ const etiquetaSistema: Record<string, string> = { metrico: 'Métrico (mm)', pulg
             <span class="atributos">${atributos}</span>
           </span>
           <span class="derecha">
-            <span class="precio">${precio}<span class="unidad"> / unidad</span></span>
             <span class="estado estado-${estado.clave}">${estado.texto}</span>
           </span>
         </a>`;

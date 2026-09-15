@@ -6,22 +6,17 @@
   "descripcion": "Tornillería de tren de rodaje para excavadora, bulldozer y cargador: tornillos de zapata de oruga, de cuchilla y carriage, en clase 12.9 y 13.9.",
   "destacada": true,
   "imagen": "/img/lineas/rodaje.jpg",
-  "total": 151,
+  "total": 117,
   "grupos": [
    {
     "nombre": "Tornillo de zapata",
     "slug": "tornillo-de-zapata",
-    "total": 82
+    "total": 83
    },
    {
     "nombre": "Tornillo de cuchilla",
     "slug": "tornillo-de-cuchilla",
-    "total": 64
-   },
-   {
-    "nombre": "Carriage zincado",
-    "slug": "carriage-zincado",
-    "total": 4
+    "total": 33
    },
    {
     "nombre": "Carriage en pulgadas",
@@ -33,7 +28,7 @@
    "grado": [
     {
      "valor": "Clase 12.9",
-     "total": 142
+     "total": 113
     },
     {
      "valor": "Clase 13.9",
@@ -43,28 +38,20 @@
    "acabado": [
     {
      "valor": "Negro",
-     "total": 145
+     "total": 116
     }
    ],
    "sistema": [
     {
      "valor": "pulgadas",
-     "total": 119
+     "total": 88
     },
     {
      "valor": "metrico",
-     "total": 32
+     "total": 29
     }
    ],
    "diametro": [
-    {
-     "valor": "5/16\"",
-     "total": 2
-    },
-    {
-     "valor": "3/8\"",
-     "total": 2
-    },
     {
      "valor": "7/16\"",
      "total": 4
@@ -75,7 +62,7 @@
     },
     {
      "valor": "1/2\"",
-     "total": 9
+     "total": 7
     },
     {
      "valor": "9/16\"",
@@ -83,7 +70,7 @@
     },
     {
      "valor": "5/8\"",
-     "total": 31
+     "total": 27
     },
     {
      "valor": "M16",
@@ -95,11 +82,11 @@
     },
     {
      "valor": "3/4\"",
-     "total": 26
+     "total": 18
     },
     {
      "valor": "M20",
-     "total": 12
+     "total": 9
     },
     {
      "valor": "M22",
@@ -107,7 +94,7 @@
     },
     {
      "valor": "7/8\"",
-     "total": 22
+     "total": 14
     },
     {
      "valor": "M24",
@@ -115,7 +102,7 @@
     },
     {
      "valor": "1\"",
-     "total": 13
+     "total": 9
     },
     {
      "valor": "M30",
@@ -123,25 +110,25 @@
     },
     {
      "valor": "1-1/4\"",
-     "total": 2
+     "total": 1
     }
    ],
    "cabeza": [
     {
-     "valor": "Avellanada de cuchilla",
-     "total": 64
-    },
-    {
      "valor": "Hexagonal",
-     "total": 44
+     "total": 45
     },
     {
-     "valor": "Carriage (cuello cuadrado)",
-     "total": 5
+     "valor": "Avellanada de cuchilla",
+     "total": 33
     },
     {
      "valor": "Flange (con arandela integrada)",
      "total": 2
+    },
+    {
+     "valor": "Carriage (cuello cuadrado)",
+     "total": 1
     }
    ],
    "vehiculo": [
@@ -153,11 +140,11 @@
    "estado": [
     {
      "valor": "Disponible",
-     "total": 103
+     "total": 90
     },
     {
      "valor": "Pocas unidades",
-     "total": 48
+     "total": 27
     }
    ]
   }
@@ -169,32 +156,37 @@
   "descripcion": "La línea más amplia del inventario: tornillos de cabeza hexagonal métricos y en pulgadas, clases 8.8, 10.9 y 12.9, grados SAE 2, 5 y 8, y en acero inoxidable.",
   "destacada": true,
   "imagen": "/img/lineas/hexagonales.jpg",
-  "total": 795,
+  "total": 827,
   "grupos": [
    {
     "nombre": "Métrico clase 10.9",
     "slug": "metrico-clase-10-9",
-    "total": 401
+    "total": 414
    },
    {
     "nombre": "Métrico clase 8.8",
     "slug": "metrico-clase-8-8",
-    "total": 169
+    "total": 171
    },
    {
     "nombre": "Pulgadas grado 8",
     "slug": "pulgadas-grado-8",
-    "total": 165
+    "total": 171
    },
    {
     "nombre": "Especiales",
     "slug": "especiales",
-    "total": 23
+    "total": 25
    },
    {
     "nombre": "Inoxidable en pulgadas",
     "slug": "inoxidable-en-pulgadas",
     "total": 12
+   },
+   {
+    "nombre": "Pulgadas grado 5",
+    "slug": "pulgadas-grado-5",
+    "total": 11
    },
    {
     "nombre": "Tornillo hexagonal mm 8.8 rex",
@@ -207,14 +199,9 @@
     "total": 8
    },
    {
-    "nombre": "Pulgadas grado 5",
-    "slug": "pulgadas-grado-5",
-    "total": 4
-   },
-   {
     "nombre": "Métrico clase 8.8 rosca total",
     "slug": "metrico-clase-8-8-rosca-total",
-    "total": 1
+    "total": 3
    },
    {
     "nombre": "Pulgadas grado 2 zincado",
@@ -226,15 +213,15 @@
    "grado": [
     {
      "valor": "Clase 10.9",
-     "total": 401
+     "total": 414
     },
     {
      "valor": "Clase 8.8",
-     "total": 180
+     "total": 184
     },
     {
      "valor": "Grado 8",
-     "total": 165
+     "total": 171
     },
     {
      "valor": "Inoxidable A2 (304)",
@@ -242,7 +229,7 @@
     },
     {
      "valor": "Grado 5",
-     "total": 4
+     "total": 11
     },
     {
      "valor": "Grado 2",
@@ -252,11 +239,11 @@
    "acabado": [
     {
      "valor": "Negro",
-     "total": 570
+     "total": 596
     },
     {
      "valor": "Zincado",
-     "total": 24
+     "total": 26
     },
     {
      "valor": "Inoxidable",
@@ -266,11 +253,11 @@
    "sistema": [
     {
      "valor": "metrico",
-     "total": 591
+     "total": 608
     },
     {
      "valor": "pulgadas",
-     "total": 204
+     "total": 219
     }
    ],
    "diametro": [
@@ -288,7 +275,7 @@
     },
     {
      "valor": "1/4\"",
-     "total": 16
+     "total": 17
     },
     {
      "valor": "M7",
@@ -296,7 +283,7 @@
     },
     {
      "valor": "5/16\"",
-     "total": 13
+     "total": 15
     },
     {
      "valor": "M8",
@@ -304,7 +291,7 @@
     },
     {
      "valor": "3/8\"",
-     "total": 19
+     "total": 20
     },
     {
      "valor": "M10",
@@ -312,7 +299,7 @@
     },
     {
      "valor": "7/16\"",
-     "total": 4
+     "total": 5
     },
     {
      "valor": "M12",
@@ -320,43 +307,43 @@
     },
     {
      "valor": "1/2\"",
-     "total": 28
+     "total": 29
     },
     {
      "valor": "M14",
-     "total": 58
+     "total": 60
     },
     {
      "valor": "9/16\"",
-     "total": 4
+     "total": 8
     },
     {
      "valor": "5/8\"",
-     "total": 23
+     "total": 24
     },
     {
      "valor": "M16",
-     "total": 90
+     "total": 91
     },
     {
      "valor": "M18",
-     "total": 31
+     "total": 37
     },
     {
      "valor": "3/4\"",
-     "total": 26
+     "total": 29
     },
     {
      "valor": "M20",
-     "total": 57
+     "total": 60
     },
     {
      "valor": "M22",
-     "total": 28
+     "total": 31
     },
     {
      "valor": "7/8\"",
-     "total": 12
+     "total": 13
     },
     {
      "valor": "M24",
@@ -368,7 +355,7 @@
     },
     {
      "valor": "M27",
-     "total": 11
+     "total": 12
     },
     {
      "valor": "1-1/8\"",
@@ -376,7 +363,7 @@
     },
     {
      "valor": "M30",
-     "total": 11
+     "total": 12
     },
     {
      "valor": "1-1/4\"",
@@ -402,7 +389,7 @@
    "cabeza": [
     {
      "valor": "Hexagonal",
-     "total": 795
+     "total": 827
     }
    ],
    "rosca_largo": [
@@ -412,17 +399,21 @@
     },
     {
      "valor": "Total",
-     "total": 130
+     "total": 132
     }
    ],
    "estado": [
     {
      "valor": "Disponible",
-     "total": 554
+     "total": 591
     },
     {
      "valor": "Pocas unidades",
-     "total": 241
+     "total": 235
+    },
+    {
+     "valor": "Bajo pedido",
+     "total": 1
     }
    ]
   }
@@ -434,7 +425,7 @@
   "descripcion": "Cabeza hexagonal con arandela integrada: reparten la carga y no requieren arandela suelta. Clase 8.8 y 10.9, rosca parcial y total.",
   "destacada": false,
   "imagen": "/img/lineas/flange.jpg",
-  "total": 176,
+  "total": 178,
   "grupos": [
    {
     "nombre": "Flange clase 10.9",
@@ -444,7 +435,12 @@
    {
     "nombre": "Flange clase 8.8 y 10.9",
     "slug": "flange-clase-8-8-y-10-9",
-    "total": 78
+    "total": 79
+   },
+   {
+    "nombre": "Especiales",
+    "slug": "especiales",
+    "total": 1
    },
    {
     "nombre": "Pulgadas grado 8",
@@ -456,7 +452,7 @@
    "grado": [
     {
      "valor": "Clase 10.9",
-     "total": 127
+     "total": 128
     },
     {
      "valor": "Clase 8.8",
@@ -470,13 +466,13 @@
    "acabado": [
     {
      "valor": "Negro",
-     "total": 128
+     "total": 129
     }
    ],
    "sistema": [
     {
      "valor": "metrico",
-     "total": 175
+     "total": 177
     },
     {
      "valor": "pulgadas",
@@ -502,11 +498,11 @@
     },
     {
      "valor": "M12",
-     "total": 38
+     "total": 39
     },
     {
      "valor": "M14",
-     "total": 17
+     "total": 18
     },
     {
      "valor": "5/8\"",
@@ -524,7 +520,7 @@
    "cabeza": [
     {
      "valor": "Flange (con arandela integrada)",
-     "total": 176
+     "total": 178
     }
    ],
    "rosca_largo": [
@@ -534,13 +530,13 @@
     },
     {
      "valor": "Total",
-     "total": 7
+     "total": 8
     }
    ],
    "estado": [
     {
      "valor": "Disponible",
-     "total": 145
+     "total": 147
     },
     {
      "valor": "Pocas unidades",
@@ -556,12 +552,12 @@
   "descripcion": "Tornillos de hueco hexagonal interior: cabeza cilíndrica, avellanada, botón y prisioneros sin cabeza. Clase 12.9 en negro y en inoxidable.",
   "destacada": true,
   "imagen": "/img/lineas/bristol.jpg",
-  "total": 386,
+  "total": 394,
   "grupos": [
    {
     "nombre": "Cabeza cilíndrica métrico negro",
     "slug": "cabeza-cilindrica-metrico-negro",
-    "total": 174
+    "total": 177
    },
    {
     "nombre": "Prisionero en pulgadas",
@@ -571,22 +567,22 @@
    {
     "nombre": "Avellanado métrico negro",
     "slug": "avellanado-metrico-negro",
-    "total": 31
+    "total": 32
    },
    {
     "nombre": "Cabeza cilíndrica en pulgadas",
     "slug": "cabeza-cilindrica-en-pulgadas",
-    "total": 26
+    "total": 27
    },
    {
     "nombre": "Prisionero métrico",
     "slug": "prisionero-metrico",
-    "total": 23
+    "total": 24
    },
    {
     "nombre": "Avellanado en pulgadas",
     "slug": "avellanado-en-pulgadas",
-    "total": 13
+    "total": 14
    },
    {
     "nombre": "Botón métrico negro",
@@ -596,7 +592,7 @@
    {
     "nombre": "Tornillo bristol botón milimetrico INOX",
     "slug": "tornillo-bristol-boton-milimetrico-inox",
-    "total": 11
+    "total": 12
    },
    {
     "nombre": "Tornillo bristol avellanadoado milimetrico INOX",
@@ -653,19 +649,19 @@
    "grado": [
     {
      "valor": "Clase 12.9",
-     "total": 181
+     "total": 184
     },
     {
      "valor": "Grado 8",
-     "total": 74
+     "total": 76
     },
     {
      "valor": "Clase 10.9",
-     "total": 54
+     "total": 56
     },
     {
      "valor": "Inoxidable A2 (304)",
-     "total": 49
+     "total": 50
     },
     {
      "valor": "Clase 8.8",
@@ -675,21 +671,21 @@
    "acabado": [
     {
      "valor": "Negro",
-     "total": 309
+     "total": 316
     },
     {
      "valor": "Inoxidable",
-     "total": 49
+     "total": 50
     }
    ],
    "sistema": [
     {
      "valor": "metrico",
-     "total": 285
+     "total": 291
     },
     {
      "valor": "pulgadas",
-     "total": 101
+     "total": 103
     }
    ],
    "diametro": [
@@ -703,15 +699,15 @@
     },
     {
      "valor": "3/16\"",
-     "total": 10
+     "total": 11
     },
     {
      "valor": "M5",
-     "total": 22
+     "total": 23
     },
     {
      "valor": "M6",
-     "total": 42
+     "total": 43
     },
     {
      "valor": "1/4\"",
@@ -719,7 +715,7 @@
     },
     {
      "valor": "5/16\"",
-     "total": 17
+     "total": 18
     },
     {
      "valor": "M8",
@@ -731,7 +727,7 @@
     },
     {
      "valor": "M10",
-     "total": 35
+     "total": 36
     },
     {
      "valor": "7/16\"",
@@ -759,7 +755,7 @@
     },
     {
      "valor": "M16",
-     "total": 21
+     "total": 23
     },
     {
      "valor": "M18",
@@ -771,7 +767,7 @@
     },
     {
      "valor": "M20",
-     "total": 19
+     "total": 20
     },
     {
      "valor": "M22",
@@ -797,19 +793,19 @@
    "cabeza": [
     {
      "valor": "Cilíndrica Bristol",
-     "total": 228
+     "total": 232
     },
     {
      "valor": "Avellanada Bristol",
-     "total": 65
+     "total": 67
     },
     {
      "valor": "Sin cabeza (prisionero)",
-     "total": 63
+     "total": 64
     },
     {
      "valor": "Botón Bristol",
-     "total": 27
+     "total": 28
     },
     {
      "valor": "Cuadrada",
@@ -819,11 +815,15 @@
    "estado": [
     {
      "valor": "Disponible",
-     "total": 287
+     "total": 295
     },
     {
      "valor": "Pocas unidades",
-     "total": 99
+     "total": 98
+    },
+    {
+     "valor": "Bajo pedido",
+     "total": 1
     }
    ]
   }
@@ -835,22 +835,22 @@
   "descripcion": "Hexagonales, de seguridad con nylon, stover, flange, cónicas, altas, de zapata y de perno de rueda. Métricas y en pulgadas.",
   "destacada": true,
   "imagen": "/img/lineas/tuercas.jpg",
-  "total": 455,
+  "total": 472,
   "grupos": [
    {
     "nombre": "Seguridad con nylon",
     "slug": "seguridad-con-nylon",
-    "total": 76
+    "total": 81
    },
    {
     "nombre": "Seguridad stover",
     "slug": "seguridad-stover",
-    "total": 43
+    "total": 44
    },
    {
     "nombre": "Hexagonal alta",
     "slug": "hexagonal-alta",
-    "total": 30
+    "total": 31
    },
    {
     "nombre": "Métrica clase 10",
@@ -860,17 +860,17 @@
    {
     "nombre": "Pulgadas grado 5",
     "slug": "pulgadas-grado-5",
-    "total": 29
+    "total": 30
    },
    {
     "nombre": "Métrica clase 8",
     "slug": "metrica-clase-8",
-    "total": 27
+    "total": 28
    },
    {
     "nombre": "Pulgadas grado 8",
     "slug": "pulgadas-grado-8",
-    "total": 25
+    "total": 26
    },
    {
     "nombre": "Cónica de rueda",
@@ -883,14 +883,19 @@
     "total": 22
    },
    {
+    "nombre": "Tuerca pinar",
+    "slug": "tuerca-pinar",
+    "total": 19
+   },
+   {
     "nombre": "De zapata",
     "slug": "de-zapata",
     "total": 18
    },
    {
-    "nombre": "Tuerca pinar",
-    "slug": "tuerca-pinar",
-    "total": 18
+    "nombre": "Tuerca flange",
+    "slug": "tuerca-flange",
+    "total": 17
    },
    {
     "nombre": "Cono forjado",
@@ -898,14 +903,14 @@
     "total": 16
    },
    {
-    "nombre": "Tuerca flange",
-    "slug": "tuerca-flange",
-    "total": 15
-   },
-   {
     "nombre": "Con arandela móvil",
     "slug": "con-arandela-movil",
-    "total": 12
+    "total": 13
+   },
+   {
+    "nombre": "Seguridad flange stover",
+    "slug": "seguridad-flange-stover",
+    "total": 13
    },
    {
     "nombre": "Pulgadas grado 2 zincada",
@@ -913,14 +918,9 @@
     "total": 12
    },
    {
-    "nombre": "Seguridad flange stover",
-    "slug": "seguridad-flange-stover",
-    "total": 11
-   },
-   {
     "nombre": "2H de alta temperatura",
     "slug": "2h-de-alta-temperatura",
-    "total": 9
+    "total": 10
    },
    {
     "nombre": "Pulgadas grado 2",
@@ -972,7 +972,7 @@
    "grado": [
     {
      "valor": "Clase 8",
-     "total": 37
+     "total": 38
     },
     {
      "valor": "Clase 10",
@@ -980,15 +980,15 @@
     },
     {
      "valor": "Grado 5",
-     "total": 30
+     "total": 31
     },
     {
      "valor": "Grado 8",
-     "total": 28
+     "total": 29
     },
     {
      "valor": "Inoxidable A2 (304)",
-     "total": 28
+     "total": 29
     },
     {
      "valor": "Grado 2",
@@ -1002,29 +1002,29 @@
    "acabado": [
     {
      "valor": "Zincado",
-     "total": 51
+     "total": 52
     },
     {
      "valor": "Inoxidable",
-     "total": 28
+     "total": 29
     },
     {
      "valor": "Negro",
-     "total": 28
+     "total": 29
     },
     {
      "valor": "Bicromatado",
-     "total": 22
+     "total": 24
     }
    ],
    "sistema": [
     {
      "valor": "metrico",
-     "total": 230
+     "total": 237
     },
     {
      "valor": "pulgadas",
-     "total": 224
+     "total": 234
     }
    ],
    "diametro": [
@@ -1038,7 +1038,7 @@
     },
     {
      "valor": "5/32\"",
-     "total": 1
+     "total": 2
     },
     {
      "valor": "M4",
@@ -1082,7 +1082,7 @@
     },
     {
      "valor": "M10",
-     "total": 23
+     "total": 24
     },
     {
      "valor": "7/16\"",
@@ -1090,7 +1090,7 @@
     },
     {
      "valor": "M12",
-     "total": 26
+     "total": 28
     },
     {
      "valor": "1/2\"",
@@ -1102,15 +1102,15 @@
     },
     {
      "valor": "9/16\"",
-     "total": 17
+     "total": 18
     },
     {
      "valor": "5/8\"",
-     "total": 21
+     "total": 22
     },
     {
      "valor": "M16",
-     "total": 21
+     "total": 23
     },
     {
      "valor": "11/16\"",
@@ -1118,11 +1118,11 @@
     },
     {
      "valor": "M18",
-     "total": 18
+     "total": 19
     },
     {
      "valor": "3/4\"",
-     "total": 19
+     "total": 22
     },
     {
      "valor": "M20",
@@ -1134,7 +1134,7 @@
     },
     {
      "valor": "7/8\"",
-     "total": 19
+     "total": 21
     },
     {
      "valor": "M24",
@@ -1142,7 +1142,7 @@
     },
     {
      "valor": "1\"",
-     "total": 14
+     "total": 15
     },
     {
      "valor": "1-1/16\"",
@@ -1158,7 +1158,7 @@
     },
     {
      "valor": "M30",
-     "total": 5
+     "total": 6
     },
     {
      "valor": "1-1/4\"",
@@ -1182,7 +1182,7 @@
     },
     {
      "valor": "1-1/2\"",
-     "total": 9
+     "total": 10
     },
     {
      "valor": "1-3/4\"",
@@ -1196,11 +1196,11 @@
    "cabeza": [
     {
      "valor": "Hexagonal",
-     "total": 234
+     "total": 239
     },
     {
      "valor": "Flange (con arandela integrada)",
-     "total": 39
+     "total": 43
     },
     {
      "valor": "Cuadrada",
@@ -1214,11 +1214,11 @@
    "estado": [
     {
      "valor": "Disponible",
-     "total": 380
+     "total": 387
     },
     {
      "valor": "Pocas unidades",
-     "total": 75
+     "total": 85
     }
    ]
   }
@@ -1230,7 +1230,7 @@
   "descripcion": "Arandelas planas, de presión (wasas), de sillín, cónicas, de sello, mogolla y de estructura F-436 a F-458.",
   "destacada": true,
   "imagen": "/img/lineas/arandelas.jpg",
-  "total": 143,
+  "total": 146,
   "grupos": [
    {
     "nombre": "Mogolla",
@@ -1255,7 +1255,7 @@
    {
     "nombre": "Especial bicromatada",
     "slug": "especial-bicromatada",
-    "total": 12
+    "total": 13
    },
    {
     "nombre": "De sillín",
@@ -1323,6 +1323,11 @@
     "total": 1
    },
    {
+    "nombre": "Arandela f-442",
+    "slug": "arandela-f-442",
+    "total": 1
+   },
+   {
     "nombre": "Arandela f-443",
     "slug": "arandela-f-443",
     "total": 1
@@ -1376,6 +1381,11 @@
     "nombre": "Arandela f-458",
     "slug": "arandela-f-458",
     "total": 1
+   },
+   {
+    "nombre": "Arandela f-463",
+    "slug": "arandela-f-463",
+    "total": 1
    }
   ],
   "facetas": {
@@ -1388,7 +1398,7 @@
    "acabado": [
     {
      "valor": "Negro",
-     "total": 25
+     "total": 26
     },
     {
      "valor": "Inoxidable",
@@ -1396,7 +1406,7 @@
     },
     {
      "valor": "Zincado",
-     "total": 21
+     "total": 22
     },
     {
      "valor": "Neopreno",
@@ -1406,7 +1416,7 @@
    "sistema": [
     {
      "valor": "pulgadas",
-     "total": 122
+     "total": 125
     },
     {
      "valor": "metrico",
@@ -1476,7 +1486,7 @@
     },
     {
      "valor": "5/8\"",
-     "total": 11
+     "total": 12
     },
     {
      "valor": "16 mm",
@@ -1488,7 +1498,7 @@
     },
     {
      "valor": "3/4\"",
-     "total": 14
+     "total": 15
     },
     {
      "valor": "20 mm",
@@ -1521,12 +1531,16 @@
     {
      "valor": "1-1/2\"",
      "total": 3
+    },
+    {
+     "valor": "1-3/4\"",
+     "total": 1
     }
    ],
    "estado": [
     {
      "valor": "Disponible",
-     "total": 117
+     "total": 120
     },
     {
      "valor": "Pocas unidades",
@@ -1542,13 +1556,8 @@
   "descripcion": "Pernos y espárragos de rueda para camión, bus, tractor y maquinaria, por marca de vehículo, con sus tuercas cónicas.",
   "destacada": true,
   "imagen": "/img/lineas/pernos.jpg",
-  "total": 193,
+  "total": 8,
   "grupos": [
-   {
-    "nombre": "Por vehículo",
-    "slug": "por-vehiculo",
-    "total": 185
-   },
    {
     "nombre": "Perno de rueda",
     "slug": "perno-de-rueda",
@@ -1559,695 +1568,35 @@
    "grado": [
     {
      "valor": "Clase 10.9",
-     "total": 23
-    },
-    {
-     "valor": "Grado 8",
      "total": 8
-    },
-    {
-     "valor": "Clase 12.9",
-     "total": 4
-    },
-    {
-     "valor": "Clase 8.8",
-     "total": 2
-    },
-    {
-     "valor": "Grado 5",
-     "total": 1
     }
    ],
    "acabado": [
     {
      "valor": "Negro",
-     "total": 36
-    },
-    {
-     "valor": "Zincado",
-     "total": 1
+     "total": 8
     }
    ],
    "sistema": [
     {
      "valor": "metrico",
-     "total": 123
-    },
-    {
-     "valor": "pulgadas",
-     "total": 62
+     "total": 8
     }
    ],
    "diametro": [
     {
-     "valor": "M6",
-     "total": 2
-    },
-    {
-     "valor": "5/16\"",
-     "total": 1
-    },
-    {
-     "valor": "M8",
-     "total": 1
-    },
-    {
-     "valor": "3/8\"",
-     "total": 1
-    },
-    {
-     "valor": "M10",
-     "total": 1
-    },
-    {
-     "valor": "M12",
-     "total": 20
-    },
-    {
-     "valor": "1/2\"",
-     "total": 5
-    },
-    {
-     "valor": "M13",
-     "total": 1
-    },
-    {
-     "valor": "M14",
-     "total": 8
-    },
-    {
-     "valor": "9/16\"",
-     "total": 6
-    },
-    {
-     "valor": "5/8\"",
-     "total": 9
-    },
-    {
-     "valor": "M16",
-     "total": 6
-    },
-    {
-     "valor": "11/16\"",
-     "total": 2
-    },
-    {
      "valor": "M18",
-     "total": 23
-    },
-    {
-     "valor": "3/4\"",
-     "total": 19
-    },
-    {
-     "valor": "M20",
-     "total": 20
-    },
-    {
-     "valor": "M22",
-     "total": 39
-    },
-    {
-     "valor": "7/8\"",
-     "total": 14
-    },
-    {
-     "valor": "M24",
-     "total": 2
-    },
-    {
-     "valor": "1\"",
-     "total": 2
-    }
-   ],
-   "cabeza": [
-    {
-     "valor": "Hexagonal",
-     "total": 9
-    },
-    {
-     "valor": "Cuadrada",
-     "total": 5
-    },
-    {
-     "valor": "Flange (con arandela integrada)",
-     "total": 3
-    },
-    {
-     "valor": "Avellanada Bristol",
-     "total": 1
-    },
-    {
-     "valor": "Carriage (cuello cuadrado)",
-     "total": 1
-    }
-   ],
-   "vehiculo": [
-    {
-     "valor": "Ford",
-     "total": 19
-    },
-    {
-     "valor": "Mercedes-Benz",
-     "total": 19
-    },
-    {
-     "valor": "Scania",
-     "total": 12
-    },
-    {
-     "valor": "Volkswagen",
-     "total": 9
-    },
-    {
-     "valor": "Toyota",
-     "total": 7
-    },
-    {
-     "valor": "Chevrolet / GM",
-     "total": 4
-    },
-    {
-     "valor": "International",
-     "total": 4
-    },
-    {
-     "valor": "Isuzu",
-     "total": 4
-    },
-    {
-     "valor": "Thomas",
-     "total": 4
-    },
-    {
-     "valor": "Agrale",
-     "total": 3
-    },
-    {
-     "valor": "Fiat",
-     "total": 3
-    },
-    {
-     "valor": "Hyundai",
-     "total": 3
-    },
-    {
-     "valor": "Iveco",
-     "total": 3
-    },
-    {
-     "valor": "Massey Ferguson",
-     "total": 3
-    },
-    {
-     "valor": "Volvo",
-     "total": 3
-    },
-    {
-     "valor": "Caterpillar",
-     "total": 2
-    },
-    {
-     "valor": "John Deere",
-     "total": 2
-    }
-   ],
-   "estado": [
-    {
-     "valor": "Disponible",
-     "total": 136
-    },
-    {
-     "valor": "Pocas unidades",
-     "total": 57
-    }
-   ]
-  }
- },
- {
-  "slug": "esparragos-varillas",
-  "nombre": "Espárragos y varillas roscadas",
-  "corto": "Espárragos",
-  "descripcion": "Espárragos métricos 8.8, espárragos B7 para alta temperatura y varilla roscada por metro en zinc, inoxidable y B7.",
-  "destacada": false,
-  "imagen": "/img/lineas/esparragos.jpg",
-  "total": 42,
-  "grupos": [
-   {
-    "nombre": "Métrico clase 8.8",
-    "slug": "metrico-clase-8-8",
-    "total": 33
-   },
-   {
-    "nombre": "Varilla zincada por metro",
-    "slug": "varilla-zincada-por-metro",
-    "total": 3
-   },
-   {
-    "nombre": "B7 alta temperatura",
-    "slug": "b7-alta-temperatura",
-    "total": 2
-   },
-   {
-    "nombre": "Varilla B7 por metro",
-    "slug": "varilla-b7-por-metro",
-    "total": 2
-   },
-   {
-    "nombre": "Varilla inoxidable por metro",
-    "slug": "varilla-inoxidable-por-metro",
-    "total": 1
-   },
-   {
-    "nombre": "Varilla zincada por 3 metros",
-    "slug": "varilla-zincada-por-3-metros",
-    "total": 1
-   }
-  ],
-  "facetas": {
-   "grado": [
-    {
-     "valor": "ASTM A193 B7",
-     "total": 3
-    },
-    {
-     "valor": "Inoxidable A2 (304)",
-     "total": 1
-    }
-   ],
-   "acabado": [
-    {
-     "valor": "Negro",
-     "total": 9
-    },
-    {
-     "valor": "Zincado",
-     "total": 4
-    },
-    {
-     "valor": "Inoxidable",
-     "total": 1
-    }
-   ],
-   "sistema": [
-    {
-     "valor": "metrico",
-     "total": 29
-    },
-    {
-     "valor": "pulgadas",
-     "total": 13
-    }
-   ],
-   "diametro": [
-    {
-     "valor": "3/16\"",
-     "total": 1
-    },
-    {
-     "valor": "M6",
-     "total": 8
-    },
-    {
-     "valor": "1/4\"",
-     "total": 1
-    },
-    {
-     "valor": "M8",
-     "total": 7
-    },
-    {
-     "valor": "3/8\"",
-     "total": 4
-    },
-    {
-     "valor": "M10",
-     "total": 3
-    },
-    {
-     "valor": "7/16\"",
-     "total": 1
-    },
-    {
-     "valor": "M12",
-     "total": 3
-    },
-    {
-     "valor": "1/2\"",
-     "total": 2
-    },
-    {
-     "valor": "M14",
-     "total": 1
-    },
-    {
-     "valor": "9/16\"",
-     "total": 1
-    },
-    {
-     "valor": "M16",
-     "total": 1
-    },
-    {
-     "valor": "M18",
-     "total": 1
-    },
-    {
-     "valor": "3/4\"",
-     "total": 1
-    },
-    {
-     "valor": "M20",
      "total": 2
     },
     {
      "valor": "M22",
-     "total": 3
-    },
-    {
-     "valor": "7/8\"",
-     "total": 1
-    },
-    {
-     "valor": "1\"",
-     "total": 1
-    }
-   ],
-   "estado": [
-    {
-     "valor": "Disponible",
-     "total": 29
-    },
-    {
-     "valor": "Pocas unidades",
-     "total": 13
-    }
-   ]
-  }
- },
- {
-  "slug": "tornillos-especiales",
-  "nombre": "Tornillos especiales, lámina y estufa",
-  "corto": "Especiales",
-  "descripcion": "Tornillos de cabeza central, de lámina con punta broca, de estufa y JIS de cabeza cilíndrica y plana.",
-  "destacada": false,
-  "imagen": "/img/lineas/especiales.jpg",
-  "total": 42,
-  "grupos": [
-   {
-    "nombre": "Cabeza central",
-    "slug": "cabeza-central",
-    "total": 28
-   },
-   {
-    "nombre": "JIS cabeza cilíndrica",
-    "slug": "jis-cabeza-cilindrica",
-    "total": 8
-   },
-   {
-    "nombre": "JIS cabeza plana",
-    "slug": "jis-cabeza-plana",
-    "total": 3
-   },
-   {
-    "nombre": "Estufa cabeza plana",
-    "slug": "estufa-cabeza-plana",
-    "total": 1
-   },
-   {
-    "nombre": "Lámina cabeza cilíndrica",
-    "slug": "lamina-cabeza-cilindrica",
-    "total": 1
-   },
-   {
-    "nombre": "Lámina punta broca",
-    "slug": "lamina-punta-broca",
-    "total": 1
-   }
-  ],
-  "facetas": {
-   "grado": [
-    {
-     "valor": "Clase 10.9",
-     "total": 8
-    },
-    {
-     "valor": "Grado 5",
-     "total": 2
-    }
-   ],
-   "acabado": [
-    {
-     "valor": "Negro",
-     "total": 8
-    },
-    {
-     "valor": "Zincado",
-     "total": 2
-    }
-   ],
-   "sistema": [
-    {
-     "valor": "pulgadas",
-     "total": 23
-    },
-    {
-     "valor": "metrico",
-     "total": 19
-    }
-   ],
-   "diametro": [
-    {
-     "valor": "M3",
-     "total": 2
-    },
-    {
-     "valor": "M4",
-     "total": 3
-    },
-    {
-     "valor": "M5",
-     "total": 4
-    },
-    {
-     "valor": "M6",
-     "total": 2
-    },
-    {
-     "valor": "5/16\"",
-     "total": 3
-    },
-    {
-     "valor": "3/8\"",
-     "total": 4
-    },
-    {
-     "valor": "M10",
-     "total": 3
-    },
-    {
-     "valor": "7/16\"",
-     "total": 5
-    },
-    {
-     "valor": "M12",
-     "total": 5
-    },
-    {
-     "valor": "1/2\"",
-     "total": 5
-    },
-    {
-     "valor": "9/16\"",
-     "total": 2
-    },
-    {
-     "valor": "5/8\"",
-     "total": 2
-    },
-    {
-     "valor": "4\"",
-     "total": 1
-    }
-   ],
-   "cabeza": [
-    {
-     "valor": "Central",
-     "total": 28
-    },
-    {
-     "valor": "Cilíndrica",
-     "total": 9
-    },
-    {
-     "valor": "Avellanada",
-     "total": 1
-    },
-    {
-     "valor": "Hexagonal",
-     "total": 1
-    }
-   ],
-   "estado": [
-    {
-     "valor": "Disponible",
-     "total": 31
-    },
-    {
-     "valor": "Pocas unidades",
-     "total": 11
-    }
-   ]
-  }
- },
- {
-  "slug": "pines-remaches",
-  "nombre": "Pines, remaches y chazos",
-  "corto": "Pines y remaches",
-  "descripcion": "Pines chaveta y seguer, remaches pop estándar y de ala ancha, y chazos plásticos de fijación.",
-  "destacada": false,
-  "imagen": "/img/lineas/pines.jpg",
-  "total": 15,
-  "grupos": [
-   {
-    "nombre": "Pin chaveta",
-    "slug": "pin-chaveta",
-    "total": 7
-   },
-   {
-    "nombre": "Remache pop ala ancha",
-    "slug": "remache-pop-ala-ancha",
-    "total": 4
-   },
-   {
-    "nombre": "Chazo plástico",
-    "slug": "chazo-plastico",
-    "total": 2
-   },
-   {
-    "nombre": "Pin seguer",
-    "slug": "pin-seguer",
-    "total": 1
-   },
-   {
-    "nombre": "Remache pop",
-    "slug": "remache-pop",
-    "total": 1
-   }
-  ],
-  "facetas": {
-   "acabado": [
-    {
-     "valor": "Zincado",
-     "total": 7
-    },
-    {
-     "valor": "Plástico",
-     "total": 1
-    }
-   ],
-   "sistema": [
-    {
-     "valor": "pulgadas",
-     "total": 10
-    },
-    {
-     "valor": "metrico",
-     "total": 1
-    }
-   ],
-   "diametro": [
-    {
-     "valor": "1/8\"",
-     "total": 1
-    },
-    {
-     "valor": "5/32\"",
-     "total": 1
-    },
-    {
-     "valor": "3/16\"",
-     "total": 2
-    },
-    {
-     "valor": "1/4\"",
-     "total": 5
-    },
-    {
-     "valor": "3/8\"",
-     "total": 1
-    },
-    {
-     "valor": "41 mm",
-     "total": 1
-    }
-   ],
-   "estado": [
-    {
-     "valor": "Disponible",
-     "total": 9
-    },
-    {
-     "valor": "Pocas unidades",
      "total": 6
     }
-   ]
-  }
- },
- {
-  "slug": "herramienta",
-  "nombre": "Herramienta",
-  "corto": "Herramienta",
-  "descripcion": "Herramienta manual profesional Sata, Stanley, Force y Truper: copas, ratchets, llaves, destornilladores, brocas, machos de roscar y discos de corte.",
-  "destacada": true,
-  "imagen": "/img/lineas/herramienta.jpg",
-  "total": 392,
-  "grupos": [
-   {
-    "nombre": "Sata",
-    "slug": "sata",
-    "total": 156
-   },
-   {
-    "nombre": "Brocas",
-    "slug": "brocas",
-    "total": 67
-   },
-   {
-    "nombre": "Stanley",
-    "slug": "stanley",
-    "total": 57
-   },
-   {
-    "nombre": "Truper y Pretul",
-    "slug": "truper-y-pretul",
-    "total": 40
-   },
-   {
-    "nombre": "Machos de roscar",
-    "slug": "machos-de-roscar",
-    "total": 32
-   },
-   {
-    "nombre": "Force",
-    "slug": "force",
-    "total": 22
-   },
-   {
-    "nombre": "Discos de corte",
-    "slug": "discos-de-corte",
-    "total": 18
-   }
-  ],
-  "facetas": {
+   ],
    "estado": [
     {
-     "valor": "Pocas unidades",
-     "total": 336
-    },
-    {
      "valor": "Disponible",
-     "total": 56
+     "total": 8
     }
    ]
   }

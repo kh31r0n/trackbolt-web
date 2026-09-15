@@ -1,7 +1,6 @@
 ---
 /**
- * Marca Trackbolt. El monograma es una cabeza hexagonal vista de frente.
- * Reemplazar por el logotipo vectorial original cuando esté disponible.
+ * Marca Trackbolt: logotipo real del cliente (public/img/marca/logo.jpeg).
  */
 interface Props {
   href?: string | null;
@@ -11,13 +10,5 @@ const Etiqueta = href ? 'a' : 'div';
 ---
 
 <Etiqueta class="marca" {...(href ? { href, 'aria-label': 'Trackbolt — inicio' } : {})}>
-  <svg viewBox="0 0 40 44" width="26" height="29" aria-hidden="true" focusable="false">
-    <polygon points="20,0 40,11 40,33 20,44 0,33 0,11" fill="#e01f26"></polygon>
-    <polygon points="20,9.5 30.8,15.75 30.8,28.25 20,34.5 9.2,28.25 9.2,15.75" fill="#0a0a0a"></polygon>
-    <rect x="18.3" y="14" width="3.4" height="16" fill="#ffffff"></rect>
-  </svg>
-  <span class="marca-texto"
-    >Track<span>bolt</span>
-    <span class="marca-bajada">Tornillos para maquinaria pesada</span>
-  </span>
+  <img src="/img/marca/logo.jpeg" alt="Trackbolt" width="1600" height="533" />
 </Etiqueta>

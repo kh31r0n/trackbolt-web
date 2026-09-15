@@ -13,12 +13,17 @@ export const empresa = {
   descripcion:
     'Importación, distribución y fabricación de tornillería de alta resistencia para maquinaria pesada, ' +
     'industria y vehículos. Entregas a todo Colombia con asesoría técnica real.',
+  razonSocial: 'Importadora Trackbolt SAS',
+  nit: '901834941-3',
   direccion: 'Calle 6 #24-16, Ricaurte',
   ciudad: 'Bogotá, Colombia',
-  email: 'operaciones@trackbolt.co',
+  correos: [
+    { etiqueta: 'Correo principal', direccion: 'marketing@trackbolt.co' },
+    { etiqueta: 'Gerencia', direccion: 'gerencia@trackbolt.co' },
+  ],
   telefonos: [
-    { etiqueta: 'WhatsApp principal', numero: '+57 310 816 8003', wa: '573108168003' },
-    { etiqueta: 'WhatsApp alterno', numero: '+57 311 518 1728', wa: '573115181728' },
+    { etiqueta: 'WhatsApp principal', numero: '+57 311 518 1728', wa: '573115181728' },
+    { etiqueta: 'WhatsApp alterno', numero: '+57 310 816 8003', wa: '573108168003' },
   ],
   redes: [
     { nombre: 'Instagram', url: 'https://www.instagram.com/importrackbolt/', usuario: '@importrackbolt' },
@@ -86,15 +91,14 @@ export const sectores = [
     texto:
       'Tractor, cosechadora e implemento agrícola. Tornillería de arado, discos y cuchillas, más ' +
       'inoxidable para plantas de proceso.',
-    lineas: ['rodaje-zapata-cuchilla', 'esparragos-varillas', 'tornillos-hexagonales'],
+    lineas: ['rodaje-zapata-cuchilla', 'tornillos-flange', 'tornillos-hexagonales'],
   },
   {
     slug: 'industria-general',
     nombre: 'Industria y mantenimiento',
     texto:
-      'Montaje estructural, mantenimiento de planta y fabricación especial bajo plano, con ' +
-      'herramienta profesional para el taller.',
-    lineas: ['tornillos-bristol', 'arandelas', 'herramienta'],
+      'Montaje estructural, mantenimiento de planta y fabricación especial bajo plano.',
+    lineas: ['tornillos-bristol', 'tuercas', 'arandelas'],
   },
 ];
 
@@ -153,7 +157,7 @@ export const faq = [
   {
     p: '¿Dónde están ubicados?',
     r: 'En la Calle 6 #24-16, barrio Ricaurte, Bogotá. Desde ahí despachamos a todo el país y puedes recoger tu ' +
-       'pedido coordinándolo antes por WhatsApp al +57 310 816 8003.',
+       'pedido coordinándolo antes por WhatsApp al +57 311 518 1728.',
   },
   {
     p: '¿Realizan envíos a todo el país?',
@@ -180,8 +184,8 @@ export const faq = [
        'largos fuera de estándar y piezas con acabado específico. Envíanos el plano o la pieza y cotizamos.',
   },
   {
-    p: '¿El precio del catálogo es el final?',
-    r: 'El precio publicado es el precio al público en pesos colombianos e incluye la referencia por unidad. ' +
-       'Para volumen, obra o distribución manejamos precios diferenciales; escríbenos y te pasamos la cotización.',
+    p: '¿Cómo conozco el precio de una referencia?',
+    r: 'El catálogo no publica precios. Cotiza por WhatsApp o correo con el código de la referencia y la cantidad ' +
+       'que necesitas: te respondemos el mismo día con precio por unidad y por volumen, obra o distribución.',
   },
 ];

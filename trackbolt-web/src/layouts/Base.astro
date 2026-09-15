@@ -27,7 +27,7 @@ const tituloCompleto = titulo.includes('Trackbolt') ? titulo : `${titulo} | Trac
     <meta name="description" content={descripcion} />
     <link rel="canonical" href={canonica} />
     {(noindex || ES_DEMO) && <meta name="robots" content="noindex, nofollow" />}
-    <meta name="theme-color" content="#0a0a0a" />
+    <meta name="theme-color" content="#000000" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
 
     <meta property="og:type" content="website" />
@@ -45,14 +45,16 @@ const tituloCompleto = titulo.includes('Trackbolt') ? titulo : `${titulo} | Trac
         '@context': 'https://schema.org',
         '@type': 'Organization',
         name: empresa.nombre,
+        legalName: empresa.razonSocial,
+        taxID: empresa.nit,
         description: empresa.descripcion,
         url: 'https://trackbolt.co',
-        email: empresa.email,
+        email: empresa.correos.map((c) => c.direccion),
         telephone: empresa.telefonos.map((t) => t.numero),
         address: {
           '@type': 'PostalAddress',
           streetAddress: empresa.direccion,
-          addressLocality: 'Bogotá',
+          addressLocality: empresa.ciudad.split(',')[0],
           addressCountry: 'CO',
         },
         sameAs: empresa.redes.map((r) => r.url),

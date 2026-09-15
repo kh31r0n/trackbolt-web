@@ -5,7 +5,7 @@ import { empresa, whatsapp } from '../data/sitio';
 
 <Base
   titulo="Contacto"
-  descripcion="Calle 6 #24-16 Ricaurte, Bogotá. WhatsApp +57 310 816 8003 · operaciones@trackbolt.co. Envíos a toda Colombia."
+  descripcion="Calle 6 #24-16 Ricaurte, Bogotá. WhatsApp +57 311 518 1728 · marketing@trackbolt.co. Envíos a toda Colombia."
 >
   <section class="portada sobre-oscuro">
     <div class="contenedor portada-contenido" style="max-width:52rem">
@@ -39,20 +39,32 @@ import { empresa, whatsapp } from '../data/sitio';
               </div>
             ))
           }
-          <div>
-            <dt style="font-size:0.74rem;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:var(--gris)">
-              Correo
-            </dt>
-            <dd style="font-size:1.1rem;font-weight:700;margin-top:0.25rem">
-              <a href={`mailto:${empresa.email}`}>{empresa.email}</a>
-            </dd>
-          </div>
+          {
+            empresa.correos.map((c) => (
+              <div>
+                <dt style="font-size:0.74rem;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:var(--gris)">
+                  {c.etiqueta}
+                </dt>
+                <dd style="font-size:1.1rem;font-weight:700;margin-top:0.25rem">
+                  <a href={`mailto:${c.direccion}`}>{c.direccion}</a>
+                </dd>
+              </div>
+            ))
+          }
           <div>
             <dt style="font-size:0.74rem;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:var(--gris)">
               Dirección
             </dt>
             <dd style="font-size:1.05rem;margin-top:0.25rem">
               {empresa.direccion}<br />{empresa.ciudad}
+            </dd>
+          </div>
+          <div>
+            <dt style="font-size:0.74rem;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:var(--gris)">
+              Datos de facturación
+            </dt>
+            <dd style="font-size:1.05rem;margin-top:0.25rem">
+              {empresa.razonSocial}<br />NIT {empresa.nit}
             </dd>
           </div>
           <div>

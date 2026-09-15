@@ -5,5 +5,3 @@ export const MULTIPLICADORES = {
   almacen: 1.75,
   mayorista: 1.5,
 };
-
-export const NIVEL_PUBLICO = 'usuario_final';
